@@ -1,6 +1,7 @@
 #!/bin/bash
 #SBATCH --job-name=graphrag
 #SBATCH --partition=defq            # DAS5/6: defq | Snellius: gpu   (check `sinfo`)
+#SBATCH -C A4000                    # DAS-6 GPU type: A4000 (16GB) | A5000 (24GB) | A6000 (48GB)
 #SBATCH --gres=gpu:1                # 1 GPU; Ollama uses CUDA automatically
 #SBATCH -N 1
 #SBATCH --ntasks-per-node=1
@@ -33,12 +34,12 @@ mkdir -p cluster/logs
 # ---------------------------------------------------------------------------
 # 1. GPU drivers  — EDIT per cluster
 # ---------------------------------------------------------------------------
-# DAS-5 / DAS-6: uncomment the module loads.
-# Snellius: usually no modules needed.
-# . /etc/bashrc
-# . /etc/profile.d/lmod.sh
-# module load cuda12.3/toolkit
-# module load cuDNN/cuda12.3
+# DAS-5 / DAS-6: module loads enabled.
+# Snellius: comment them out (modules not usually needed).
+. /etc/bashrc
+. /etc/profile.d/lmod.sh
+module load cuda12.6/toolkit
+module load cuDNN/cuda12.6
 command -v nvidia-smi >/dev/null && nvidia-smi --query-gpu=name,memory.total --format=csv || true
 
 # ---------------------------------------------------------------------------
