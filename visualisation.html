@@ -1,0 +1,711 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Model Card Compliance — GAI Act Visualiser</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<style>
+  :root {
+    --bg: #0f1117;
+    --surface: #1a1d27;
+    --surface2: #222638;
+    --border: #2d3250;
+    --text: #e2e8f0;
+    --muted: #8892a4;
+    --green: #22c55e;
+    --green-dim: #166534;
+    --red: #ef4444;
+    --red-dim: #7f1d1d;
+    --yellow: #eab308;
+    --blue: #3b82f6;
+    --purple: #a855f7;
+    --accent: #6366f1;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: var(--bg); color: var(--text); font-family: 'Inter', system-ui, sans-serif; line-height: 1.5; }
+  a { color: var(--blue); }
+
+  /* Layout */
+  .container { max-width: 1400px; margin: 0 auto; padding: 0 24px; }
+
+  /* Header */
+  .header { background: linear-gradient(135deg, #1a1d27 0%, #0f1117 100%); border-bottom: 1px solid var(--border); padding: 32px 0 24px; margin-bottom: 32px; }
+  .header h1 { font-size: 1.75rem; font-weight: 700; letter-spacing: -0.02em; }
+  .header h1 span { color: var(--accent); }
+  .header .sub { color: var(--muted); font-size: 0.875rem; margin-top: 4px; }
+  .badge { display: inline-flex; align-items: center; gap: 6px; background: var(--surface2); border: 1px solid var(--border); border-radius: 9999px; padding: 3px 12px; font-size: 0.75rem; color: var(--muted); margin-top: 10px; }
+  .badge .dot { width: 7px; height: 7px; border-radius: 50%; background: var(--green); animation: pulse 2s infinite; }
+  @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.4} }
+
+  /* Section */
+  section { margin-bottom: 40px; }
+  .section-title { font-size: 1rem; font-weight: 600; color: var(--muted); text-transform: uppercase; letter-spacing: 0.08em; font-size: 0.7rem; margin-bottom: 16px; display: flex; align-items: center; gap: 8px; }
+  .section-title::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+
+  /* Summary Cards */
+  .cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 16px; margin-bottom: 40px; }
+  .card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 20px; position: relative; overflow: hidden; transition: border-color 0.2s; }
+  .card:hover { border-color: var(--accent); }
+  .card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px; border-radius: 12px 12px 0 0; }
+  .card.compliant::before { background: var(--green); }
+  .card.partial::before { background: var(--yellow); }
+  .card.noncompliant::before { background: var(--red); }
+  .card-doc { font-size: 0.78rem; color: var(--muted); font-family: monospace; margin-bottom: 4px; }
+  .card-model { font-size: 0.85rem; font-weight: 600; margin-bottom: 12px; }
+  .card-rate { font-size: 2.5rem; font-weight: 700; letter-spacing: -0.03em; line-height: 1; }
+  .card-rate.green { color: var(--green); }
+  .card-rate.yellow { color: var(--yellow); }
+  .card-rate.red { color: var(--red); }
+  .card-sub { font-size: 0.78rem; color: var(--muted); margin-top: 4px; }
+  .card-pill { position: absolute; top: 20px; right: 20px; font-size: 0.65rem; font-weight: 600; padding: 3px 10px; border-radius: 9999px; text-transform: uppercase; letter-spacing: 0.05em; }
+  .pill-green { background: #16532433; color: var(--green); border: 1px solid var(--green-dim); }
+  .pill-yellow { background: #71380333; color: var(--yellow); border: 1px solid #713803; }
+  .pill-red { background: #7f1d1d33; color: var(--red); border: 1px solid var(--red-dim); }
+
+  /* Progress bar */
+  .progress-wrap { margin-top: 14px; }
+  .progress-bar { height: 6px; background: var(--surface2); border-radius: 9999px; overflow: hidden; }
+  .progress-fill { height: 100%; border-radius: 9999px; transition: width 1s ease; }
+  .progress-fill.green { background: var(--green); }
+  .progress-fill.yellow { background: var(--yellow); }
+  .progress-fill.red { background: var(--red); }
+
+  /* Heatmap */
+  .heatmap-wrap { overflow-x: auto; }
+  .heatmap-table { border-collapse: separate; border-spacing: 0; width: 100%; min-width: 900px; }
+  .heatmap-table th { font-size: 0.65rem; font-weight: 600; color: var(--muted); text-align: center; padding: 4px 2px; white-space: nowrap; }
+  .heatmap-table th.dataset-header { font-size: 0.7rem; font-weight: 700; text-align: center; padding: 6px 4px; border-radius: 6px 6px 0 0; }
+  .dataset-header.train { color: #60a5fa; background: #1e3a5f33; }
+  .dataset-header.valid { color: #a78bfa; background: #2d1b6933; }
+  .dataset-header.test { color: #34d399; background: #064e3b33; }
+  .req-header.train { color: #60a5fa88; }
+  .req-header.valid { color: #a78bfa88; }
+  .req-header.test { color: #34d39988; }
+  .heatmap-table td { padding: 3px; }
+  .heatmap-table td.row-label { white-space: nowrap; padding: 8px 14px 8px 0; text-align: right; }
+  .row-label .doc-name { font-size: 0.78rem; font-family: monospace; color: var(--text); }
+  .row-label .model-name { font-size: 0.68rem; color: var(--muted); }
+  .cell { width: 22px; height: 22px; border-radius: 4px; display: flex; align-items: center; justify-content: center; cursor: default; transition: transform 0.1s; }
+  .cell:hover { transform: scale(1.3); z-index: 10; position: relative; }
+  .cell.hit { background: var(--green-dim); border: 1px solid #16532466; }
+  .cell.miss { background: var(--red-dim); border: 1px solid #7f1d1d66; }
+  .cell.hit::after { content: '✓'; font-size: 10px; color: var(--green); }
+  .cell.miss::after { content: '✗'; font-size: 10px; color: var(--red); }
+  .heatmap-legend { display: flex; gap: 16px; margin-top: 12px; font-size: 0.78rem; color: var(--muted); align-items: center; }
+  .legend-item { display: flex; align-items: center; gap: 6px; }
+  .legend-box { width: 14px; height: 14px; border-radius: 3px; }
+
+  /* Table */
+  .data-table { width: 100%; border-collapse: collapse; font-size: 0.82rem; }
+  .data-table thead th { background: var(--surface2); color: var(--muted); font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.05em; padding: 10px 14px; text-align: left; border-bottom: 1px solid var(--border); }
+  .data-table tbody tr { border-bottom: 1px solid var(--border); transition: background 0.15s; }
+  .data-table tbody tr:hover { background: var(--surface2); }
+  .data-table td { padding: 10px 14px; }
+  .mono { font-family: monospace; font-size: 0.8rem; }
+  .tag { display: inline-block; font-size: 0.65rem; padding: 2px 8px; border-radius: 9999px; font-weight: 600; }
+  .tag-blue { background: #1e3a5f; color: #60a5fa; }
+  .tag-purple { background: #2d1b69; color: #a78bfa; }
+  .tag-green { background: #16532433; color: var(--green); }
+  .tag-red { background: #7f1d1d33; color: var(--red); }
+  .tag-yellow { background: #71380333; color: var(--yellow); }
+
+  /* Stat bars in table */
+  .mini-bar-wrap { display: flex; align-items: center; gap: 8px; }
+  .mini-bar { height: 8px; background: var(--surface2); border-radius: 9999px; width: 100px; overflow: hidden; flex-shrink: 0; }
+  .mini-fill { height: 100%; border-radius: 9999px; }
+
+  /* Agreement section */
+  .agreement-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  .agreement-card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 20px; }
+  .big-stat { font-size: 3rem; font-weight: 700; letter-spacing: -0.04em; color: var(--green); }
+  .agreement-details { margin-top: 14px; font-size: 0.82rem; color: var(--muted); }
+  .disagreed-tag { display: inline-block; background: var(--red-dim); color: var(--red); border-radius: 6px; padding: 2px 8px; font-size: 0.72rem; font-family: monospace; margin: 2px; }
+
+  /* System overview */
+  .sys-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+  .sys-card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 16px 20px; }
+  .sys-card-title { font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.08em; color: var(--muted); margin-bottom: 8px; }
+  .sys-value { font-size: 1.6rem; font-weight: 700; color: var(--accent); }
+  .sys-detail { font-size: 0.78rem; color: var(--muted); margin-top: 4px; }
+
+  /* Dataset breakdown */
+  .dataset-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+  .dataset-card { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 16px; }
+  .dataset-card-title { font-size: 0.75rem; font-weight: 700; margin-bottom: 10px; display: flex; align-items: center; gap: 8px; }
+  .dot-blue { width: 8px; height: 8px; border-radius: 50%; background: #60a5fa; }
+  .dot-purple { width: 8px; height: 8px; border-radius: 50%; background: #a78bfa; }
+  .dot-green { width: 8px; height: 8px; border-radius: 50%; background: #34d399; }
+  .req-list { list-style: none; }
+  .req-list li { display: flex; align-items: center; justify-content: space-between; font-size: 0.75rem; padding: 3px 0; border-bottom: 1px solid var(--border); }
+  .req-list li:last-child { border-bottom: none; }
+  .req-name { color: var(--muted); }
+  .req-status { font-size: 0.7rem; font-weight: 700; }
+
+  /* Chart container */
+  .chart-wrap { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 20px; }
+  .chart-title { font-size: 0.85rem; font-weight: 600; margin-bottom: 16px; color: var(--muted); }
+
+  /* Tooltip */
+  [title] { cursor: help; }
+
+  /* Footer */
+  .footer { border-top: 1px solid var(--border); padding: 20px 0; margin-top: 40px; text-align: center; color: var(--muted); font-size: 0.78rem; }
+
+  @media (max-width: 768px) {
+    .agreement-grid, .sys-grid, .dataset-grid { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="container">
+    <h1>Model Card Compliance <span>Visualiser</span></h1>
+    <div class="sub">GAI Act · High-Risk AI System Documentation Analysis · Knowledge Graph Extraction</div>
+    <div class="badge"><span class="dot"></span>4 runs · 3 models · 39 compliance requirements</div>
+  </div>
+</div>
+
+<div class="container">
+
+  <!-- Summary Cards -->
+  <div class="section-title">Detection Rate by Run</div>
+  <div class="cards">
+
+    <div class="card compliant">
+      <div class="card-pill pill-green">Compliant</div>
+      <div class="card-doc">model_card_compliant</div>
+      <div class="card-model">granite4.1-8b / unknown</div>
+      <div class="card-rate green">92.3%</div>
+      <div class="card-sub">36 of 39 requirements detected</div>
+      <div class="progress-wrap">
+        <div class="progress-bar"><div class="progress-fill green" style="width:92.3%"></div></div>
+      </div>
+    </div>
+
+    <div class="card compliant">
+      <div class="card-pill pill-green">Compliant · 100%</div>
+      <div class="card-doc">model_card_compliant</div>
+      <div class="card-model">qwen2.5-14b</div>
+      <div class="card-rate green">100%</div>
+      <div class="card-sub">39 of 39 requirements detected</div>
+      <div class="progress-wrap">
+        <div class="progress-bar"><div class="progress-fill green" style="width:100%"></div></div>
+      </div>
+    </div>
+
+    <div class="card partial">
+      <div class="card-pill pill-yellow">Compliant</div>
+      <div class="card-doc">model_card_compliant_copy</div>
+      <div class="card-model">granite4.1-8b / unknown</div>
+      <div class="card-rate yellow">94.9%</div>
+      <div class="card-sub">37 of 39 requirements detected</div>
+      <div class="progress-wrap">
+        <div class="progress-bar"><div class="progress-fill yellow" style="width:94.9%"></div></div>
+      </div>
+    </div>
+
+    <div class="card noncompliant">
+      <div class="card-pill pill-red">Non-Compliant</div>
+      <div class="card-doc">model_card_noncompliant</div>
+      <div class="card-model">qwen2.5-7b / unknown</div>
+      <div class="card-rate red">38.5%</div>
+      <div class="card-sub">15 of 39 requirements detected</div>
+      <div class="progress-wrap">
+        <div class="progress-bar"><div class="progress-fill red" style="width:38.5%"></div></div>
+      </div>
+    </div>
+
+    <div class="card noncompliant">
+      <div class="card-pill pill-red">Non-Compliant</div>
+      <div class="card-doc">google__medgemma-4b-it_compliant</div>
+      <div class="card-model">qwen2.5-7b</div>
+      <div class="card-rate red">30.8%</div>
+      <div class="card-sub">12 of 39 requirements detected</div>
+      <div class="progress-wrap">
+        <div class="progress-bar"><div class="progress-fill red" style="width:30.8%"></div></div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- System Overview Stats -->
+  <section>
+    <div class="section-title">System Overview</div>
+    <div class="sys-grid">
+      <div class="sys-card">
+        <div class="sys-card-title">System Type</div>
+        <div class="sys-value" style="font-size:1.1rem; line-height:1.3">High-Risk AI System</div>
+        <div class="sys-detail">GAI Act Classification · HighRiskAISystem</div>
+      </div>
+      <div class="sys-card">
+        <div class="sys-card-title">Datasets Required</div>
+        <div class="sys-value">3</div>
+        <div class="sys-detail">Training · Validation · Testing</div>
+      </div>
+      <div class="sys-card">
+        <div class="sys-card-title">Sensitive Data</div>
+        <div class="sys-value" style="color:var(--green)">No</div>
+        <div class="sys-detail">processesSensitiveDataForBias = false</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Compliance Heatmap -->
+  <section>
+    <div class="section-title">Requirement Detection Heatmap — 39 GAI Act Criteria</div>
+    <div class="heatmap-wrap">
+      <table class="heatmap-table" id="heatmap"></table>
+    </div>
+    <div class="heatmap-legend">
+      <div class="legend-item"><div class="legend-box" style="background:var(--green-dim); border:1px solid #16532466"></div> Detected</div>
+      <div class="legend-item"><div class="legend-box" style="background:var(--red-dim); border:1px solid #7f1d1d66"></div> Not Detected</div>
+      <span style="color:var(--muted);font-size:0.72rem">Hover cells for details</span>
+    </div>
+  </section>
+
+  <!-- Dataset Requirement Detail -->
+  <section>
+    <div class="section-title">GAI Act Requirements by Dataset</div>
+    <div class="dataset-grid" id="dataset-detail"></div>
+  </section>
+
+  <!-- KG Quality Metrics -->
+  <section>
+    <div class="section-title">Knowledge Graph Quality Metrics</div>
+    <div style="overflow-x:auto">
+    <table class="data-table">
+      <thead>
+        <tr>
+          <th>Document</th>
+          <th>Model</th>
+          <th>Entity Nodes</th>
+          <th>Schema Nodes</th>
+          <th>Schema Compliance</th>
+          <th>Node Types</th>
+          <th>Content Rels</th>
+          <th>Rel Types</th>
+        </tr>
+      </thead>
+      <tbody id="kg-table"></tbody>
+    </table>
+    </div>
+  </section>
+
+  <!-- Charts Row -->
+  <section>
+    <div class="section-title">KG Metrics Charts</div>
+    <div style="display:grid; grid-template-columns:1fr 1fr; gap:16px">
+      <div class="chart-wrap">
+        <div class="chart-title">Entity Nodes vs Schema Nodes per Run</div>
+        <canvas id="nodeChart" height="200"></canvas>
+      </div>
+      <div class="chart-wrap">
+        <div class="chart-title">Schema Compliance % per Run</div>
+        <canvas id="schemaChart" height="200"></canvas>
+      </div>
+    </div>
+  </section>
+
+  <!-- Cross-Model Agreement -->
+  <section>
+    <div class="section-title">Cross-Model Agreement</div>
+    <div class="agreement-grid">
+      <div class="agreement-card">
+        <div style="font-size:0.78rem;color:var(--muted);margin-bottom:4px">model_card_compliant · unknown vs qwen2.5-14b</div>
+        <div class="big-stat">92.3%</div>
+        <div style="font-size:0.82rem;color:var(--muted);margin-top:6px">36 of 39 keys agreed</div>
+        <div class="agreement-details">
+          <div style="margin-bottom:6px;font-weight:600;color:var(--text)">Disagreed Requirements:</div>
+          <span class="disagreed-tag">testing.bias_mitigation</span>
+          <span class="disagreed-tag">testing.data_gap</span>
+          <span class="disagreed-tag">validation.data_gap</span>
+        </div>
+      </div>
+      <div class="agreement-card">
+        <div style="font-size:0.78rem;color:var(--muted);margin-bottom:8px">Agreement Interpretation</div>
+        <div style="font-size:0.85rem;line-height:1.7;color:var(--text)">
+          Both models agree on <strong style="color:var(--green)">36/39</strong> requirements for the compliant model card.
+          Disagreements are concentrated in <strong>bias-related</strong> and <strong>data gap</strong> documentation fields —
+          areas that tend to be ambiguously worded or implicit in source documents.
+        </div>
+        <div style="margin-top:14px; padding:10px 14px; background:var(--surface2); border-radius:8px; font-size:0.78rem; color:var(--muted); border-left: 3px solid var(--yellow)">
+          Only 1 cross-model comparison available (same document, 2 models). Expand comparisons for statistical significance.
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Entity Schema Adherence -->
+  <section>
+    <div class="section-title">Entity Type Schema Adherence</div>
+    <div class="chart-wrap">
+      <div class="chart-title">Schema-Compliant vs Non-Compliant Entity Types per Run</div>
+      <canvas id="entityChart" height="100"></canvas>
+    </div>
+  </section>
+
+  <!-- Raw TTL Summary -->
+  <section>
+    <div class="section-title">Extracted Knowledge Graph Structure</div>
+    <div style="display:grid; grid-template-columns:1fr 1fr; gap:16px">
+
+      <div class="chart-wrap">
+        <div class="chart-title">Compliant Model Card — Dataset Links</div>
+        <div style="font-size:0.82rem;line-height:1.9;color:var(--muted)">
+          <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px">
+            <div style="width:10px;height:10px;border-radius:50%;background:var(--accent)"></div>
+            <span style="color:var(--text);font-weight:600">ex:TargetSystem</span>
+            <span class="tag tag-purple">HighRiskAISystem</span>
+          </div>
+          <div style="padding-left:20px;border-left:2px solid var(--border)">
+            <div style="margin:4px 0">↳ <span style="color:#60a5fa">hasTrainingDataset</span> → ex:TrainingDataset <span class="tag tag-blue">13 docs</span></div>
+            <div style="margin:4px 0">↳ <span style="color:#a78bfa">hasValidationDataset</span> → ex:ValidationDataset <span class="tag tag-purple">13 docs</span></div>
+            <div style="margin:4px 0">↳ <span style="color:#34d399">hasTestingDataset</span> → ex:TestingDataset <span class="tag tag-green">11 docs</span></div>
+            <div style="margin:8px 0;padding-top:8px;border-top:1px solid var(--border)">
+              <div>processesSensitiveDataForBias: <span style="color:var(--green)">false</span></div>
+              <div>usesTrainingTechniques: <span style="color:var(--green)">true</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="chart-wrap">
+        <div class="chart-title">Non-Compliant Model Card — Missing Elements</div>
+        <div style="font-size:0.82rem;line-height:1.9;color:var(--muted)">
+          <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px">
+            <div style="width:10px;height:10px;border-radius:50%;background:var(--red)"></div>
+            <span style="color:var(--text);font-weight:600">ex:TargetSystem</span>
+            <span class="tag tag-red">HighRiskAISystem</span>
+          </div>
+          <div style="padding-left:20px;border-left:2px solid var(--red-dim)">
+            <div style="margin:4px 0">↳ <span style="color:#60a5fa">hasTrainingDataset</span> → ex:TrainingDataset <span class="tag tag-blue">8 docs</span></div>
+            <div style="margin:4px 0">↳ <span style="color:#a78bfa">hasValidationDataset</span> → ex:ValidationDataset <span class="tag tag-yellow">7 docs</span></div>
+            <div style="margin:4px 0;color:var(--red)">✗ <span>hasTestingDataset</span> <span class="tag tag-red">MISSING</span></div>
+            <div style="margin:8px 0;padding-top:8px;border-top:1px solid var(--border)">
+              <div style="color:var(--red)">✗ bias_examination — not documented</div>
+              <div style="color:var(--red)">✗ bias_mitigation — not documented</div>
+              <div style="color:var(--red)">✗ data_gap — not documented</div>
+              <div style="color:var(--red)">✗ quality_metrics — not documented</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+</div>
+
+<div class="footer">
+  <div class="container">
+    Generated 2026-05-31 · GraphRAG Knowledge Extraction Pipeline · GAI Act Article 10 Compliance
+  </div>
+</div>
+
+<script>
+// ── Data ─────────────────────────────────────────────────────────────────────
+
+const REQS = [
+  'Design Choices','Provenance','Preprocessing','Assumptions','Suitability',
+  'Bias Exam','Bias Mitig.','Data Gap','Relevance','Represent.','Stat. Props','Quality','Context'
+];
+
+const RUNS = [
+  {
+    doc: 'google__medgemma-4b-it_compliant',
+    model: 'qwen2.5-7b',
+    rate: 30.8, detected: 12,
+    training:   [1,1,1,1,1,1,1,1,1,1,1,1,0],
+    validation: [0,0,0,0,0,0,0,0,0,0,0,0,0],
+    testing:    [0,0,0,0,0,0,0,0,0,0,0,0,0],
+  },
+  {
+    doc: 'model_card_compliant',
+    model: 'unknown (granite4.1-8b)',
+    rate: 92.3, detected: 36,
+    training:   [1,1,1,1,1,1,1,1,1,1,1,1,1],
+    validation: [1,1,1,1,1,1,1,0,1,1,1,1,1],
+    testing:    [1,1,1,1,1,0,0,1,1,1,1,1,1],
+  },
+  {
+    doc: 'model_card_compliant',
+    model: 'qwen2.5-14b',
+    rate: 100.0, detected: 39,
+    training:   [1,1,1,1,1,1,1,1,1,1,1,1,1],
+    validation: [1,1,1,1,1,1,1,1,1,1,1,1,1],
+    testing:    [1,1,1,1,1,1,1,1,1,1,1,1,1],
+  },
+  {
+    doc: 'model_card_compliant_copy',
+    model: 'unknown (granite4.1-8b)',
+    rate: 94.9, detected: 37,
+    training:   [1,1,1,1,1,1,1,1,1,1,0,1,1],
+    validation: [1,1,1,1,1,1,1,1,1,1,1,1,1],
+    testing:    [1,1,1,1,0,1,1,1,1,1,1,1,1],
+  },
+  {
+    doc: 'model_card_noncompliant',
+    model: 'unknown (qwen2.5-7b)',
+    rate: 38.5, detected: 15,
+    training:   [1,1,1,1,1,0,0,0,1,0,1,0,1],
+    validation: [1,1,1,1,1,1,0,0,0,1,0,0,0],
+    testing:    [0,0,0,0,0,0,0,0,0,0,0,0,0],
+  },
+];
+
+const KG_METRICS = [
+  { doc:'google__medgemma-4b-it_compliant', model:'qwen2.5-7b',    entity:223, schema:90, schemaPct:40.4, nodeTypes:40, contentRels:168, relTypes:51 },
+  { doc:'model_card_compliant',      model:'granite4.1-8b', entity:42, schema:3,  schemaPct:7.1,  nodeTypes:27, contentRels:34, relTypes:21 },
+  { doc:'model_card_compliant',      model:'qwen2.5-14b',   entity:25, schema:4,  schemaPct:16.0, nodeTypes:13, contentRels:16, relTypes:12 },
+  { doc:'model_card_compliant',      model:'qwen2.5-7b',    entity:21, schema:4,  schemaPct:19.0, nodeTypes:11, contentRels:14, relTypes:13 },
+  { doc:'model_card_compliant_copy', model:'granite4.1-8b', entity:29, schema:6,  schemaPct:20.7, nodeTypes:24, contentRels:21, relTypes:18 },
+  { doc:'model_card_compliant_copy', model:'qwen2.5-7b',    entity:26, schema:2,  schemaPct:7.7,  nodeTypes:17, contentRels:16, relTypes:13 },
+  { doc:'model_card_noncompliant',   model:'qwen2.5-7b',    entity:9,  schema:3,  schemaPct:33.3, nodeTypes:5,  contentRels:5,  relTypes:5  },
+];
+
+// ── Heatmap ───────────────────────────────────────────────────────────────────
+
+function buildHeatmap() {
+  const table = document.getElementById('heatmap');
+
+  // Dataset header row
+  const dsetRow = table.insertRow();
+  const spacer = dsetRow.insertCell(); spacer.setAttribute('rowspan','1');
+  const datasets = [{label:'Training',cls:'train',span:13},{label:'Validation',cls:'valid',span:13},{label:'Testing',cls:'test',span:13}];
+  datasets.forEach(d => {
+    const th = document.createElement('th');
+    th.setAttribute('colspan', d.span);
+    th.className = 'dataset-header ' + d.cls;
+    th.textContent = d.label;
+    dsetRow.appendChild(th);
+  });
+
+  // Requirement header row
+  const reqRow = table.insertRow();
+  const spacer2 = reqRow.insertCell();
+  datasets.forEach(d => {
+    REQS.forEach(r => {
+      const th = document.createElement('th');
+      th.className = 'req-header ' + d.cls;
+      th.textContent = r;
+      th.style.writingMode = 'vertical-rl';
+      th.style.transform = 'rotate(180deg)';
+      th.style.height = '80px';
+      reqRow.appendChild(th);
+    });
+  });
+
+  // Data rows
+  RUNS.forEach(run => {
+    const tr = table.insertRow();
+    const label = tr.insertCell();
+    label.className = 'row-label';
+    label.innerHTML = `<div class="doc-name">${run.doc}</div><div class="model-name">${run.model}</div>`;
+
+    const allVals = [...run.training, ...run.validation, ...run.testing];
+    const dsLabels = ['Training','Validation','Testing'];
+    const dsCls = ['train','valid','test'];
+    const dsData = [run.training, run.validation, run.testing];
+
+    dsData.forEach((ds, di) => {
+      ds.forEach((val, ri) => {
+        const td = tr.insertCell();
+        const div = document.createElement('div');
+        div.className = 'cell ' + (val ? 'hit' : 'miss');
+        div.title = `${dsLabels[di]} · ${REQS[ri]}: ${val ? 'Detected ✓' : 'Missing ✗'}`;
+        td.appendChild(div);
+      });
+    });
+  });
+}
+
+// ── Dataset Detail ────────────────────────────────────────────────────────────
+
+function buildDatasetDetail() {
+  const container = document.getElementById('dataset-detail');
+  const datasets = [
+    { name: 'Training Dataset', cls: 'dot-blue', data: 0 },
+    { name: 'Validation Dataset', cls: 'dot-purple', data: 1 },
+    { name: 'Testing Dataset', cls: 'dot-green', data: 2 },
+  ];
+  const dataArrays = [
+    RUNS.map(r => r.training),
+    RUNS.map(r => r.validation),
+    RUNS.map(r => r.testing),
+  ];
+
+  datasets.forEach((ds, di) => {
+    const card = document.createElement('div');
+    card.className = 'dataset-card';
+    const title = document.createElement('div');
+    title.className = 'dataset-card-title';
+    title.innerHTML = `<div class="${ds.cls}"></div>${ds.name}`;
+    card.appendChild(title);
+
+    const ul = document.createElement('ul');
+    ul.className = 'req-list';
+    REQS.forEach((req, ri) => {
+      const vals = dataArrays[di].map(r => r[ri]);
+      const sum = vals.reduce((a, b) => a + b, 0);
+      const pct = Math.round(sum / vals.length * 100);
+      const li = document.createElement('li');
+      const colors = ['var(--green)', 'var(--yellow)', 'var(--red)'];
+      const color = pct === 100 ? colors[0] : pct >= 50 ? colors[1] : colors[2];
+      li.innerHTML = `<span class="req-name">${req}</span><span class="req-status" style="color:${color}">${sum}/${vals.length}</span>`;
+      ul.appendChild(li);
+    });
+    card.appendChild(ul);
+    container.appendChild(card);
+  });
+}
+
+// ── KG Table ──────────────────────────────────────────────────────────────────
+
+function buildKGTable() {
+  const tbody = document.getElementById('kg-table');
+  KG_METRICS.forEach(m => {
+    const tr = tbody.insertRow();
+    const docColors = {
+      'google__medgemma-4b-it_compliant': 'tag-green',
+      'model_card_compliant': 'tag-blue',
+      'model_card_compliant_copy': 'tag-purple',
+      'model_card_noncompliant': 'tag-red',
+    };
+    tr.innerHTML = `
+      <td><span class="tag ${docColors[m.doc] || 'tag-blue'} mono">${m.doc}</span></td>
+      <td class="mono">${m.model}</td>
+      <td>${m.entity}</td>
+      <td>${m.schema}</td>
+      <td>
+        <div class="mini-bar-wrap">
+          <div class="mini-bar"><div class="mini-fill" style="width:${m.schemaPct}%;background:${m.schemaPct>20?'var(--green)':m.schemaPct>10?'var(--yellow)':'var(--red)'}"></div></div>
+          <span>${m.schemaPct}%</span>
+        </div>
+      </td>
+      <td>${m.nodeTypes}</td>
+      <td>${m.contentRels}</td>
+      <td>${m.relTypes}</td>
+    `;
+  });
+}
+
+// ── Charts ────────────────────────────────────────────────────────────────────
+
+Chart.defaults.color = '#8892a4';
+Chart.defaults.borderColor = '#2d3250';
+
+function buildNodeChart() {
+  const labels = KG_METRICS.map(m => m.model + '\n(' + m.doc.replace('model_card_','') + ')');
+  new Chart(document.getElementById('nodeChart'), {
+    type: 'bar',
+    data: {
+      labels: KG_METRICS.map(m => m.model),
+      datasets: [
+        {
+          label: 'Entity Nodes',
+          data: KG_METRICS.map(m => m.entity),
+          backgroundColor: '#3b82f666',
+          borderColor: '#3b82f6',
+          borderWidth: 1,
+        },
+        {
+          label: 'Schema Nodes',
+          data: KG_METRICS.map(m => m.schema),
+          backgroundColor: '#a855f766',
+          borderColor: '#a855f7',
+          borderWidth: 1,
+        },
+      ]
+    },
+    options: {
+      responsive: true,
+      plugins: { legend: { position: 'top' } },
+      scales: {
+        x: { ticks: { font: { size: 10 } } },
+        y: { beginAtZero: true }
+      }
+    }
+  });
+}
+
+function buildSchemaChart() {
+  new Chart(document.getElementById('schemaChart'), {
+    type: 'bar',
+    data: {
+      labels: KG_METRICS.map(m => m.model + ' (' + m.doc.slice(-8) + ')'),
+      datasets: [{
+        label: 'Schema Compliance %',
+        data: KG_METRICS.map(m => m.schemaPct),
+        backgroundColor: KG_METRICS.map(m => m.schemaPct > 20 ? '#22c55e66' : m.schemaPct > 10 ? '#eab30866' : '#ef444466'),
+        borderColor: KG_METRICS.map(m => m.schemaPct > 20 ? '#22c55e' : m.schemaPct > 10 ? '#eab308' : '#ef4444'),
+        borderWidth: 1,
+      }]
+    },
+    options: {
+      responsive: true,
+      plugins: { legend: { display: false } },
+      scales: {
+        x: { ticks: { font: { size: 10 } } },
+        y: { beginAtZero: true, max: 40, ticks: { callback: v => v + '%' } }
+      }
+    }
+  });
+}
+
+function buildEntityChart() {
+  // Schema-compliant vs non-compliant entity types counts from inventory
+  const data = [
+    { label: 'medgemma/qwen2.5-7b',     compliant: 2,  noncompliant: 38 },
+    { label: 'compliant/granite4.1-8b', compliant: 2,  noncompliant: 25 },
+    { label: 'compliant/qwen2.5-14b',   compliant: 2,  noncompliant: 11 },
+    { label: 'compliant/qwen2.5-7b',    compliant: 2,  noncompliant: 9  },
+    { label: 'compliant_copy/granite',   compliant: 3,  noncompliant: 21 },
+    { label: 'compliant_copy/qwen2.5-7b',compliant: 2, noncompliant: 15 },
+    { label: 'noncompliant/qwen2.5-7b', compliant: 2,  noncompliant: 3  },
+  ];
+  new Chart(document.getElementById('entityChart'), {
+    type: 'bar',
+    data: {
+      labels: data.map(d => d.label),
+      datasets: [
+        {
+          label: 'Schema-Compliant Types',
+          data: data.map(d => d.compliant),
+          backgroundColor: '#22c55e66',
+          borderColor: '#22c55e',
+          borderWidth: 1,
+        },
+        {
+          label: 'Non-Compliant Types',
+          data: data.map(d => d.noncompliant),
+          backgroundColor: '#ef444466',
+          borderColor: '#ef4444',
+          borderWidth: 1,
+        }
+      ]
+    },
+    options: {
+      responsive: true,
+      indexAxis: 'y',
+      plugins: { legend: { position: 'top' } },
+      scales: {
+        x: { stacked: false, beginAtZero: true },
+        y: { ticks: { font: { size: 10 } } }
+      }
+    }
+  });
+}
+
+// ── Init ──────────────────────────────────────────────────────────────────────
+
+buildHeatmap();
+buildDatasetDetail();
+buildKGTable();
+buildNodeChart();
+buildSchemaChart();
+buildEntityChart();
+</script>
+</body>
+</html>

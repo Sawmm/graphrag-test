@@ -1,0 +1,352 @@
+# Annex IV Normalization — Article 10 Data Governance
+<!-- Copy this file to normalized/<model_id>_annex_iv.md and fill in each field.
+     Leave a field blank if the source card contains no relevant information.
+     Do NOT invent content — only restructure what is actually in the raw card. -->
+
+## Document metadata
+- **HuggingFace ID:** google/medgemma-4b-it
+- **Source card file:** `raw/google__medgemma-4b-it.md`
+- **Normalized by:** Claude
+- **Date normalized:** 2026-05-17
+- **Second annotator:**
+- **Date second-annotated:**
+
+---
+
+## Section 1 — System Overview
+*(Annex IV §1 — general description)*
+
+- **System name and version:** MedGemma 4B (instruction-tuned), version 1.0.1; model created July 9, 2025
+- **Intended purpose / task:** Multimodal medical AI foundation model intended as a starting point for developers building healthcare applications involving medical text and image comprehension (visual question answering, image classification, report generation, medical question answering). Not intended for direct clinical diagnosis or patient management.
+- **High-risk category (Annex III ref.):** Potentially Annex III §5 (AI systems intended to be used as safety components in medical devices or as medical devices themselves), though the card positions MedGemma as a developer tool/foundation model rather than a finished medical device.
+- **Intended users / deployers:** Developers in the life sciences and healthcare space; not end patients or clinicians directly. Developers are expected to fine-tune and adapt the model for specific downstream applications.
+- **Geographic / regulatory scope:** Not addressed in model card. The license (Health AI Developer Foundations terms) is global. Evaluation data includes US, Colombian, Australian, Brazilian, and European clinical datasets.
+
+---
+
+## Section 2 — Training Dataset
+*(Annex IV §2 — development process; Article 10(2)–(4))*
+
+### 2.1 Design choices  `Art. 10(2)(a)`
+> Why was this dataset chosen for this purpose? Selection criteria, intended coverage, scope.
+
+MedGemma 4B was trained on a diverse set of medical data chosen to cover key medical imaging modalities and medical text domains. The SigLIP image encoder was specifically pre-trained on de-identified medical data including chest X-rays, dermatology images, ophthalmology images, and histopathology slides. The LLM component was trained on medical text, medical question-answer pairs, radiology images, histopathology patches, ophthalmology images, and dermatology images. The model card states the goal was to produce strong baseline medical image and text comprehension to enable efficient adaptation for downstream healthcare use cases.
+
+### 2.2 Provenance  `Art. 10(2)(b)`
+> Origin of the data — where it came from, how collected, institutions involved, legal/consent basis.
+
+The training data comprises a combination of public and private datasets. Named public datasets include:
+- MIMIC-CXR (MIT Laboratory for Computational Physiology and Beth Israel Deaconess Medical Center)
+- SLAKE (The Hong Kong Polytechnic University and collaborating hospitals)
+- PAD-UFES-20 (Federal University of Espírito Santo, Brazil)
+- SCIN (Google Health and Stanford Medicine collaboration)
+- TCGA (National Cancer Institute and National Human Genome Research Institute)
+- CAMELYON (Radboud University Medical Center and University Medical Center Utrecht, Netherlands)
+- PMC-OA (National Library of Medicine / NCBI / NIH)
+- MedQA (academic researchers)
+- Mendeley Digital Knee X-Ray (Rani Channamma University)
+- AfriMed-QA (Intron Health, SisonkeBiotik, BioRAMP, Georgia Institute of Technology, MasakhaneNLP)
+- VQA-RAD (US National Library of Medicine and NIH)
+- Chest ImaGenome (IBM Research)
+- MedExpQA (HiTZ Center, Basque Country)
+- MedXpertQA (Tsinghua University and Shanghai AI Laboratory)
+- HealthSearchQA (public consumer health questions)
+
+Proprietary datasets (de-identified or internally collected with consent):
+- Radiology dataset 1: De-identified CT studies from a US-based radiology outpatient diagnostic center network.
+- Ophthalmology dataset 1 (EyePACS): De-identified fundus images from diabetic retinopathy screening.
+- Dermatology dataset 1: De-identified teledermatology images from Colombia.
+- Dermatology dataset 2: De-identified skin cancer images from Australia.
+- Dermatology dataset 3: De-identified non-diseased skin images from an internal Google data collection effort.
+- Pathology dataset 1: De-identified histopathology H&E whole slide images from a European academic research hospital and biobank.
+- Pathology dataset 2: De-identified lung histopathology images from a US commercial biobank.
+- Pathology dataset 3: De-identified prostate and lymph node histopathology images from a US contract research organization.
+- Pathology dataset 4: De-identified histopathology images from a large US tertiary teaching hospital.
+- EHR dataset 1: Synthetic FHIR records generated by Synthea (not real patient data).
+
+The card states that proprietary datasets were "licensed and incorporated" and that datasets were collected "from consented participants."
+
+### 2.3 Preprocessing  `Art. 10(2)(c)`
+> Cleaning, filtering, annotation, labelling, augmentation, and other transformations applied.
+
+The card states that Google and its partners "utilize datasets that have been rigorously anonymized or de-identified to ensure the protection of individual research participants and patient privacy." Training was done using JAX on TPUs. No further preprocessing steps (cleaning, filtering, labelling methodology, augmentation) are described in the model card.
+
+### 2.4 Assumptions  `Art. 10(2)(d)`
+> What does the dataset claim to represent? Stated limitations of that representation.
+
+The model card notes that MedGemma's training data focuses on chest X-ray, pathology, dermatology, and fundus images. It acknowledges: (1) a risk of data contamination where the model may have seen related medical information during pre-training, potentially overestimating generalization to novel medical concepts; (2) that evaluation benchmarks were primarily English language; (3) that multimodal capabilities were primarily evaluated on single-image tasks and have not been evaluated for multi-image comprehension. No explicit statement of what population the training data is intended to represent is provided.
+
+### 2.5 Suitability  `Art. 10(2)(e)`
+> Size, coverage, and any explicit fitness-for-purpose assessment.
+
+The model card does not specify the total size (number of samples or tokens) of the training dataset. Coverage is described qualitatively: "diverse set of medical data" spanning multiple imaging modalities (radiology, pathology, dermatology, ophthalmology) and text domains (medical QA, EHR, biomedical literature). The card notes that MedGemma outperforms the base Gemma 3 4B model across all tested multimodal and text health benchmarks, implying the training data is suitable for the stated purpose of producing a medical AI foundation model. No formal fitness-for-purpose assessment is documented.
+
+### 2.6 Bias examination  `Art. 10(2)(f)`
+> Protected attributes examined, methodology used, findings reported.
+
+The model card includes ethics and safety evaluations covering representational harms (bias, stereotyping, harmful associations or inaccuracies), assessed via structured evaluations and internal red-teaming. The card also notes that developers adapting MedGemma should ensure validation data is representative of intended use settings including "age, sex, gender, condition, imaging device." However, no systematic bias examination of the training data itself (e.g., analysis of demographic distributions in training datasets, protected attribute coverage) is documented.
+
+### 2.7 Bias mitigation  `Art. 10(2)(g)`
+> Measures taken (resampling, re-weighting, etc.) — or documented decision not to mitigate.
+
+Not addressed in model card. No bias mitigation measures for the training data are described. The card advises downstream developers to validate on representative data but does not document mitigation steps taken during training.
+
+### 2.8 Data gaps  `Art. 10(2)(h)`
+> Known shortcomings, coverage gaps, how they were addressed or acknowledged.
+
+The model card implicitly acknowledges the following gaps: (1) training evaluation benchmarks were primarily in English; (2) multimodal capabilities have not been evaluated for multi-image comprehension; (3) the model has not been evaluated or optimized for multi-turn applications; (4) risk of data contamination with publicly available benchmarks. The card advises developers to validate on non-publicly-available datasets to mitigate contamination. No systematic listing of data gaps in the training set is provided.
+
+### 2.9 Relevance  `Art. 10(3)`
+> Fitness-for-purpose statement — why this dataset is appropriate for the intended task.
+
+The card states that MedGemma was pre-trained on data relevant to its target medical domains (chest X-ray, pathology, dermatology, ophthalmology, medical text/QA) and that this training "provides strong baseline medical image and text comprehension" making it efficient to adapt for downstream healthcare use cases compared to general-purpose models of similar size. No formal relevance or fitness-for-purpose assessment is provided.
+
+### 2.10 Representativeness  `Art. 10(3)`
+> Subgroup coverage — demographic, geographic, clinical, or other relevant breakdowns.
+
+The training data spans multiple geographic origins (US, Colombia, Australia, Netherlands, Brazil, Europe, Asia). Medical image modalities covered include chest X-ray, CT, dermatology (clinical and dermatoscopic), ophthalmology (fundus), histopathology (colon, prostate, lymph nodes, lung, breast, cervical), and knee X-ray. No demographic breakdowns (age, sex, race/ethnicity) of the training datasets are reported. The card notes that safety evaluations were "primarily English language."
+
+### 2.11 Statistical properties  `Art. 10(3)`
+> Class distribution, variance, inter-class correlation, or other quantitative characteristics.
+
+Not addressed in model card.
+
+### 2.12 Quality metrics  `Art. 10(3)`
+> Completeness, error rates, annotation consistency, or other quality measures.
+
+Not addressed in model card. The card mentions that MIMIC-CXR uses "radiologist adjudicated labels" for some evaluation splits, but this refers to evaluation data, not a quality metric for the training dataset itself.
+
+### 2.13 Contextual characteristics  `Art. 10(4)`
+> Deployment environment — geographic scope, clinical setting, equipment, patient population.
+
+Not explicitly addressed in the model card for the training data context. The proprietary datasets describe clinical settings implicitly: US outpatient radiology centers, diabetic retinopathy screening (EyePACS), teledermatology clinics in Colombia, cancer imaging in Australia, European academic pathology labs, US commercial and academic pathology labs.
+
+---
+
+## Section 3 — Validation Dataset
+*(same 13 fields as Section 2)*
+
+### 3.1 Design choices  `Art. 10(2)(a)`
+
+The validation/evaluation datasets were chosen to cover "a range of clinically relevant benchmarks," including multimodal classification, report generation, visual question answering, and text-based tasks. The card states evaluation spans "over 22 datasets across 5 different tasks and 6 medical image modalities" and includes "both open benchmark datasets and curated datasets, with a focus on expert human evaluations for tasks like CXR report generation and radiology VQA."
+
+### 3.2 Provenance  `Art. 10(2)(b)`
+
+Named evaluation datasets with institutional provenance:
+- MIMIC-CXR (MIT / BIDMC) — used for CXR report generation (RadGraph F1)
+- CheXpert CXR — chest X-ray classification
+- CXR14 — chest X-ray classification
+- PathMCQA — internal histopathology benchmark
+- US-DermMCQA — dermatology classification (based on Liu 2020, Nature Medicine)
+- EyePACS — fundus diabetic retinopathy classification (internal)
+- SLAKE (PolyU and collaborators) — radiology visual QA
+- VQA-RAD (US NLM / NIH) — radiology visual QA
+- MedXpertQA (Tsinghua University / Shanghai AI Lab) — expert medical reasoning
+- MedQA, MedMCQA, PubMedQA, MMLU Med, AfriMed-QA — text-based medical knowledge/reasoning
+- EHRQA — EHR question answering on synthetic FHIR data
+
+### 3.3 Preprocessing  `Art. 10(2)(c)`
+
+Not addressed in model card. The card notes that VQA-RAD uses a "balanced split" and MIMIC-CXR uses "radiologist adjudicated labels" for specific evaluation conditions, but no general preprocessing description for the validation datasets is provided.
+
+### 3.4 Assumptions  `Art. 10(2)(d)`
+
+Not explicitly stated. The card implies the evaluation benchmarks are assumed to be representative of clinically relevant tasks. It notes a limitation: the instruction-tuned versions of MedGemma 4B score lower on CXR report generation (MIMIC RadGraph F1) "due to differences in reporting style compared to the MIMIC ground truth reports," which implicitly acknowledges that MIMIC report style is not universal.
+
+### 3.5 Suitability  `Art. 10(2)(e)`
+
+The card describes evaluation as "comprehensive," covering "over 22 datasets across 5 different tasks and 6 medical image modalities," including both open and internal datasets. No formal suitability or sufficiency assessment is provided.
+
+### 3.6 Bias examination  `Art. 10(2)(f)`
+
+Not addressed in model card for the validation datasets specifically. The card notes that safety/ethics evaluations were "primarily English language," which is acknowledged as a limitation.
+
+### 3.7 Bias mitigation  `Art. 10(2)(g)`
+
+Not addressed in model card.
+
+### 3.8 Data gaps  `Art. 10(2)(h)`
+
+The card acknowledges the following evaluation gaps: (1) evaluations were primarily in English; (2) multimodal capabilities were evaluated only on single-image tasks; (3) multi-turn application performance was not evaluated; (4) potential data contamination from public benchmark datasets. The card states: "Developers should validate MedGemma on datasets not publicly available or otherwise made available to non-institutional researchers to mitigate this risk."
+
+### 3.9 Relevance  `Art. 10(3)`
+
+The card states evaluations were "clinically relevant" and cover the same medical domains as training (radiology, dermatology, ophthalmology, pathology, medical text). Performance improvements over the base Gemma 3 4B model are demonstrated across all tested benchmarks.
+
+### 3.10 Representativeness  `Art. 10(3)`
+
+Benchmark datasets span multiple medical domains and imaging modalities. AfriMed-QA is included as a pan-African medical QA benchmark, providing some geographic diversity. No demographic breakdown (age, sex, ethnicity) of the evaluation datasets is reported.
+
+### 3.11 Statistical properties  `Art. 10(3)`
+
+Not addressed in model card beyond noting that VQA-RAD uses a "balanced split" and MIMIC-CXR uses a specific subset for classification.
+
+### 3.12 Quality metrics  `Art. 10(3)`
+
+The card mentions that MIMIC-CXR classification benchmarks use "radiologist adjudicated labels" and that CXR report generation was assessed using RadGraph F1, a clinically validated metric. Expert human evaluations were used for CXR report generation and radiology VQA. No systematic quality metric description for the validation datasets is provided.
+
+### 3.13 Contextual characteristics  `Art. 10(4)`
+
+Not explicitly addressed in the model card. The benchmarks implicitly reflect hospital/clinical imaging contexts (US academic medical centers for MIMIC-CXR, diabetic retinopathy screening programs for EyePACS, etc.).
+
+---
+
+## Section 4 — Testing Dataset
+*(same 13 fields; if no independent test set exists, mark all N/A and note why)*
+
+Note: The model card does not distinguish a separate held-out test dataset from the evaluation/validation benchmarks. All performance results are reported against named benchmark datasets (MIMIC-CXR, CheXpert, SLAKE, etc.) which appear to serve as both validation and test sets. The EHR dataset 1 (EHRQA) uses "19 unique patients with 200 questions per patient" as a test set. Fields below reflect what is documented about evaluation splits where the card makes any distinction.
+
+### 4.1 Design choices  `Art. 10(2)(a)`
+
+Not addressed in model card as a distinct testing phase. The same benchmark datasets described in Section 3 serve as evaluation.
+
+### 4.2 Provenance  `Art. 10(2)(b)`
+
+Not addressed in model card as a distinct testing phase. See Section 3.2 for provenance of evaluation datasets.
+
+### 4.3 Preprocessing  `Art. 10(2)(c)`
+
+Not addressed in model card.
+
+### 4.4 Assumptions  `Art. 10(2)(d)`
+
+Not addressed in model card.
+
+### 4.5 Suitability  `Art. 10(2)(e)`
+
+Not addressed in model card.
+
+### 4.6 Bias examination  `Art. 10(2)(f)`
+
+Not addressed in model card.
+
+### 4.7 Bias mitigation  `Art. 10(2)(g)`
+
+Not addressed in model card.
+
+### 4.8 Data gaps  `Art. 10(2)(h)`
+
+Not addressed in model card.
+
+### 4.9 Relevance  `Art. 10(3)`
+
+Not addressed in model card.
+
+### 4.10 Representativeness  `Art. 10(3)`
+
+Not addressed in model card.
+
+### 4.11 Statistical properties  `Art. 10(3)`
+
+Not addressed in model card.
+
+### 4.12 Quality metrics  `Art. 10(3)`
+
+Not addressed in model card.
+
+### 4.13 Contextual characteristics  `Art. 10(4)`
+
+Not addressed in model card.
+
+---
+
+## Section 5 — Sensitive Personal Data  `Art. 10(5)`
+
+- **Processes sensitive data for bias correction:** `unclear`
+
+The card does not explicitly state that sensitive personal data is processed for the purpose of bias detection and correction as defined under Art. 10(5). De-identification is described as a general data governance measure across all training data, not as a specific safeguard enabling sensitive-attribute processing for bias correction. The fields below cannot be completed from the information in the model card.
+
+### 5.1 Necessity
+
+Not addressed in model card.
+
+### 5.2 Security measures
+
+The card states that "Google and its partners utilize datasets that have been rigorously anonymized or de-identified to ensure the protection of individual research participants and patient privacy." Training was conducted on Google infrastructure (TPUs using JAX). No further technical safeguards (encryption, access restrictions) are described.
+
+### 5.3 Access controls
+
+Not addressed in model card.
+
+### 5.4 Transfer prohibition
+
+Not addressed in model card.
+
+### 5.5 Deletion procedure
+
+Not addressed in model card.
+
+### 5.6 Processing record
+
+Not addressed in model card.
+
+---
+
+## Compliance Annotation
+<!-- Fill in AFTER completing all sections above.
+     satisfied     = information is present and substantively addresses the obligation
+     partial       = information is present but vague, incomplete, or implicit
+     not_satisfied = obligation is not addressed at all
+     N/A           = genuinely not applicable (e.g. no independent test set) -->
+
+### Training dataset obligations
+| Obligation | §ref | Annotator 1 | Annotator 2 | Final |
+|---|---|---|---|---|
+| design_choices | 10(2)(a) | partial | | |
+| provenance | 10(2)(b) | satisfied | | |
+| preprocessing | 10(2)(c) | partial | | |
+| assumptions | 10(2)(d) | partial | | |
+| suitability | 10(2)(e) | partial | | |
+| bias_examination | 10(2)(f) | partial | | |
+| bias_mitigation | 10(2)(g) | not_satisfied | | |
+| data_gap | 10(2)(h) | partial | | |
+| relevance | 10(3) | partial | | |
+| representativeness | 10(3) | partial | | |
+| statistical_props | 10(3) | not_satisfied | | |
+| quality_metrics | 10(3) | not_satisfied | | |
+| contextual_characteristics | 10(4) | partial | | |
+
+**Training obligations satisfied (count):** 7.5 / 13 &nbsp;*(partial = 0.5)*
+
+### Validation dataset obligations
+| Obligation | §ref | Annotator 1 | Annotator 2 | Final |
+|---|---|---|---|---|
+| design_choices | 10(2)(a) | partial | | |
+| provenance | 10(2)(b) | satisfied | | |
+| preprocessing | 10(2)(c) | not_satisfied | | |
+| assumptions | 10(2)(d) | partial | | |
+| suitability | 10(2)(e) | partial | | |
+| bias_examination | 10(2)(f) | not_satisfied | | |
+| bias_mitigation | 10(2)(g) | not_satisfied | | |
+| data_gap | 10(2)(h) | partial | | |
+| relevance | 10(3) | partial | | |
+| representativeness | 10(3) | partial | | |
+| statistical_props | 10(3) | partial | | |
+| quality_metrics | 10(3) | partial | | |
+| contextual_characteristics | 10(4) | not_satisfied | | |
+
+**Validation obligations satisfied (count):** 5.5 / 13
+
+### Testing dataset obligations
+| Obligation | §ref | Annotator 1 | Annotator 2 | Final |
+|---|---|---|---|---|
+| design_choices | 10(2)(a) | N/A | | |
+| provenance | 10(2)(b) | N/A | | |
+| preprocessing | 10(2)(c) | N/A | | |
+| assumptions | 10(2)(d) | N/A | | |
+| suitability | 10(2)(e) | N/A | | |
+| bias_examination | 10(2)(f) | N/A | | |
+| bias_mitigation | 10(2)(g) | N/A | | |
+| data_gap | 10(2)(h) | N/A | | |
+| relevance | 10(3) | N/A | | |
+| representativeness | 10(3) | N/A | | |
+| statistical_props | 10(3) | N/A | | |
+| quality_metrics | 10(3) | N/A | | |
+| contextual_characteristics | 10(4) | N/A | | |
+
+**Testing obligations satisfied (count):** N/A — no independent test set; evaluation benchmarks serve dual validation/testing role.
+
+### Overall verdict
+- **Compliant:** `no`
+  *(yes = training ≥ 10/13 AND validation ≥ 8/13; partial counts as 0.5)*
+- **Annotator notes:** Training score is 7.5/13 (below threshold of 10); validation score is 5.5/13 (below threshold of 8). The model card is strong on dataset provenance, naming specific institutions and datasets with citations. However, it is systematically weak on preprocessing details, statistical properties, quality metrics, bias mitigation documentation, and contextual deployment characteristics for both training and validation data. No independent test set is distinguished from validation benchmarks.

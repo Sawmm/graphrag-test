@@ -1,0 +1,31 @@
+# Python-generated files
+__pycache__/
+*.py[oc]
+build/
+dist/
+wheels/
+*.egg-info
+
+# Virtual environments
+.venv
+
+# PDFs (cluster docs, etc.)
+*.pdf
+
+# OS junk
+.DS_Store
+
+# Generated run artifacts / caches — do not upload
+cache/
+outputs/
+analysis/
+
+# Cluster job logs / scratch
+cluster/logs/
+*.out
+*.err
+slurm-*.out
+
+# Local Neo4j data (if running a container with a bind mount)
+neo4j-data/
+neo4j-logs/
