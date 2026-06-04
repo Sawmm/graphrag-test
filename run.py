@@ -621,11 +621,13 @@ def validate_and_report(g: Graph, shapes_path: Path) -> bool:
 # Entry point
 # ---------------------------------------------------------------------------
 
-# Default shapes path: look for the thesis repo next to this repo
-DEFAULT_SHAPES_PATH = (
-    Path(__file__).parent.parent
-    / "thesis" / "shacl-modelling" / "ontologies" / "article10-shapes.ttl"
-)
+# Default shapes path: in-repo shapes/ dir, fall back to sibling thesis repo
+DEFAULT_SHAPES_PATH = Path(__file__).parent / "shapes" / "article10-shapes.ttl"
+if not DEFAULT_SHAPES_PATH.exists():
+    DEFAULT_SHAPES_PATH = (
+        Path(__file__).parent.parent
+        / "thesis" / "shacl-modelling" / "ontologies" / "article10-shapes.ttl"
+    )
 
 
 def main() -> None:

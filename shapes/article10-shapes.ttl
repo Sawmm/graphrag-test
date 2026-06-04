@@ -1,0 +1,413 @@
+@prefix sh:      <http://www.w3.org/ns/shacl#> .
+@prefix gai-act: <https://gelsi.com/gai-act#> .
+@prefix dcat:    <http://www.w3.org/ns/dcat#> .
+@prefix dct:     <http://purl.org/dc/terms/> .
+@prefix xsd:     <http://www.w3.org/2001/XMLSchema#> .
+@prefix tair:    <http://tair.adaptcentre.ie/ontologies/tair/> .
+
+# ══════════════════════════════════════════════════════════════════════════════
+#  SHACL shapes — EU AI Act Article 10 (Data Governance)
+#
+#  Shape families:
+#    Family 1  §10(1)  — Dataset existence (3 shapes)
+#    Family 2  §10(2)  — Data governance documentation (8 sub-shapes, reusable)
+#    Family 3  §10(3)  — Dataset quality documentation (4 shapes)
+#    Family 4  §10(4)  — Contextual characteristics documentation (1 shape)
+#    Family 5  §10(5)  — Sensitive data conditional (SPARQL, 6 sub-shapes)
+#    Family 6  §10(6)  — Non-training systems conditional (SPARQL)
+#
+#  Documentation Proxy Principle: "Partial" obligations (marked ⚠️) are
+#  checked by verifying existence of a gai-act:DocumentationNode, not the
+#  adequacy of its content. This reflects Art. 10's audit-oriented nature.
+# ══════════════════════════════════════════════════════════════════════════════
+
+
+# ──────────────────────────────────────────────────────────────────────────────
+#  FAMILY 1 — §10(1): Dataset existence
+#  Tractability: ✅ Full (structural check)
+# ──────────────────────────────────────────────────────────────────────────────
+
+gai-act:TrainingDataExistenceShape a sh:NodeShape ;
+    sh:targetClass gai-act:HighRiskAISystem ;
+    sh:severity sh:Violation ;
+    sh:property [
+        sh:path gai-act:hasTrainingDataset ;
+        sh:minCount 1 ;
+        sh:class dcat:Dataset ;
+        sh:message "Art. 10(1): High-risk AI system must have a training dataset."@en ;
+    ] .
+
+gai-act:ValidationDataExistenceShape a sh:NodeShape ;
+    sh:targetClass gai-act:HighRiskAISystem ;
+    sh:severity sh:Violation ;
+    sh:property [
+        sh:path gai-act:hasValidationDataset ;
+        sh:minCount 1 ;
+        sh:class dcat:Dataset ;
+        sh:message "Art. 10(1): High-risk AI system must have a validation dataset."@en ;
+    ] .
+
+gai-act:TestingDataExistenceShape a sh:NodeShape ;
+    sh:targetClass gai-act:HighRiskAISystem ;
+    sh:severity sh:Violation ;
+    sh:property [
+        sh:path gai-act:hasTestingDataset ;
+        sh:minCount 1 ;
+        sh:class dcat:Dataset ;
+        sh:message "Art. 10(1): High-risk AI system must have a testing dataset."@en ;
+    ] .
+
+
+# ──────────────────────────────────────────────────────────────────────────────
+#  FAMILY 2 — §10(2): Data governance documentation
+#  Tractability: ⚠️ Partial (documentation proxy — existence check only)
+#
+#  DatasetGovernanceShape is reusable: applied via sh:node from the three
+#  per-dataset-type shapes below, avoiding duplication of the 8 sub-checks.
+# ──────────────────────────────────────────────────────────────────────────────
+
+# Reusable shape: checks §10(2a–h) on any dcat:Dataset node
+gai-act:DatasetGovernanceShape a sh:NodeShape ;
+    sh:severity sh:Violation ;
+    sh:property [
+        sh:path gai-act:hasDesignChoicesDoc ;
+        sh:minCount 1 ;
+        sh:class gai-act:DocumentationNode ;
+        sh:message "Art. 10(2a): Dataset must have documented design choices."@en ;
+    ] ;
+    sh:property [
+        sh:path gai-act:hasProvenanceDoc ;
+        sh:minCount 1 ;
+        sh:class gai-act:DocumentationNode ;
+        sh:message "Art. 10(2b): Dataset must have documented data collection processes and origin."@en ;
+    ] ;
+    sh:property [
+        sh:path gai-act:hasPreprocessingDoc ;
+        sh:minCount 1 ;
+        sh:class gai-act:DocumentationNode ;
+        sh:message "Art. 10(2c): Dataset must have documented data-preparation operations."@en ;
+    ] ;
+    sh:property [
+        sh:path gai-act:hasAssumptionsDoc ;
+        sh:minCount 1 ;
+        sh:class gai-act:DocumentationNode ;
+        sh:message "Art. 10(2d): Dataset must have documented assumptions about what the data measures."@en ;
+    ] ;
+    sh:property [
+        sh:path gai-act:hasSuitabilityDoc ;
+        sh:minCount 1 ;
+        sh:class gai-act:DocumentationNode ;
+        sh:message "Art. 10(2e): Dataset must have a documented suitability assessment."@en ;
+    ] ;
+    sh:property [
+        sh:path gai-act:hasBiasExaminationDoc ;
+        sh:minCount 1 ;
+        sh:class gai-act:DocumentationNode ;
+        sh:message "Art. 10(2f): Dataset must have documented bias examination."@en ;
+    ] ;
+    sh:property [
+        sh:path gai-act:hasBiasMitigationDoc ;
+        sh:minCount 1 ;
+        sh:class gai-act:DocumentationNode ;
+        sh:message "Art. 10(2g): Dataset must have documented bias mitigation measures."@en ;
+    ] ;
+    sh:property [
+        sh:path gai-act:hasDataGapDoc ;
+        sh:minCount 1 ;
+        sh:class gai-act:DocumentationNode ;
+        sh:message "Art. 10(2h): Dataset must have documented data gaps and shortcomings."@en ;
+    ] .
+
+# Applied to each dataset type via sh:node
+gai-act:TrainingDataGovernanceShape a sh:NodeShape ;
+    sh:targetClass gai-act:HighRiskAISystem ;
+    sh:severity sh:Violation ;
+    sh:property [
+        sh:path gai-act:hasTrainingDataset ;
+        sh:minCount 1 ;
+        sh:node gai-act:DatasetGovernanceShape ;
+        sh:message "Art. 10(2): Training dataset must satisfy all data governance documentation requirements."@en ;
+    ] .
+
+gai-act:ValidationDataGovernanceShape a sh:NodeShape ;
+    sh:targetClass gai-act:HighRiskAISystem ;
+    sh:severity sh:Violation ;
+    sh:property [
+        sh:path gai-act:hasValidationDataset ;
+        sh:minCount 1 ;
+        sh:node gai-act:DatasetGovernanceShape ;
+        sh:message "Art. 10(2): Validation dataset must satisfy all data governance documentation requirements."@en ;
+    ] .
+
+gai-act:TestingDataGovernanceShape a sh:NodeShape ;
+    sh:targetClass gai-act:HighRiskAISystem ;
+    sh:severity sh:Violation ;
+    sh:property [
+        sh:path gai-act:hasTestingDataset ;
+        sh:minCount 1 ;
+        sh:node gai-act:DatasetGovernanceShape ;
+        sh:message "Art. 10(2): Testing dataset must satisfy all data governance documentation requirements."@en ;
+    ] .
+
+
+# ──────────────────────────────────────────────────────────────────────────────
+#  FAMILY 3 — §10(3): Dataset quality documentation
+#  Tractability: ⚠️ Partial (documentation proxy — "free of errors" not
+#  machine-checkable; verified by existence of quality metrics documentation)
+# ──────────────────────────────────────────────────────────────────────────────
+
+gai-act:DatasetQualityShape a sh:NodeShape ;
+    sh:severity sh:Violation ;
+    sh:property [
+        sh:path gai-act:hasRelevanceDoc ;
+        sh:minCount 1 ;
+        sh:class gai-act:DocumentationNode ;
+        sh:message "Art. 10(3): Dataset must have documented relevance to the intended purpose."@en ;
+    ] ;
+    sh:property [
+        sh:path gai-act:hasRepresentativenessDoc ;
+        sh:minCount 1 ;
+        sh:class gai-act:DocumentationNode ;
+        sh:message "Art. 10(3): Dataset must have documented representativeness."@en ;
+    ] ;
+    sh:property [
+        sh:path gai-act:hasStatisticalPropsDoc ;
+        sh:minCount 1 ;
+        sh:class gai-act:DocumentationNode ;
+        sh:message "Art. 10(3): Dataset must have documented statistical properties."@en ;
+    ] ;
+    sh:property [
+        sh:path gai-act:hasQualityMetricsDoc ;
+        sh:minCount 1 ;
+        sh:class gai-act:DocumentationNode ;
+        sh:message "Art. 10(3): Dataset must have documented quality metrics (proxy for 'free of errors and complete')."@en ;
+    ] .
+
+gai-act:TrainingDataQualityShape a sh:NodeShape ;
+    sh:targetClass gai-act:HighRiskAISystem ;
+    sh:severity sh:Violation ;
+    sh:property [
+        sh:path gai-act:hasTrainingDataset ;
+        sh:minCount 1 ;
+        sh:node gai-act:DatasetQualityShape ;
+        sh:message "Art. 10(3): Training dataset must satisfy quality documentation requirements."@en ;
+    ] .
+
+gai-act:ValidationDataQualityShape a sh:NodeShape ;
+    sh:targetClass gai-act:HighRiskAISystem ;
+    sh:severity sh:Violation ;
+    sh:property [
+        sh:path gai-act:hasValidationDataset ;
+        sh:minCount 1 ;
+        sh:node gai-act:DatasetQualityShape ;
+        sh:message "Art. 10(3): Validation dataset must satisfy quality documentation requirements."@en ;
+    ] .
+
+gai-act:TestingDataQualityShape a sh:NodeShape ;
+    sh:targetClass gai-act:HighRiskAISystem ;
+    sh:severity sh:Violation ;
+    sh:property [
+        sh:path gai-act:hasTestingDataset ;
+        sh:minCount 1 ;
+        sh:node gai-act:DatasetQualityShape ;
+        sh:message "Art. 10(3): Testing dataset must satisfy quality documentation requirements."@en ;
+    ] .
+
+
+# ──────────────────────────────────────────────────────────────────────────────
+#  FAMILY 4 — §10(4): Contextual characteristics documentation
+#  Tractability: ⚠️ Partial (documentation proxy)
+# ──────────────────────────────────────────────────────────────────────────────
+
+gai-act:DatasetContextualShape a sh:NodeShape ;
+    sh:severity sh:Violation ;
+    sh:property [
+        sh:path gai-act:hasContextualCharacteristicsDoc ;
+        sh:minCount 1 ;
+        sh:class gai-act:DocumentationNode ;
+        sh:message "Art. 10(4): Dataset must have documented characteristics of the deployment setting."@en ;
+    ] .
+
+gai-act:TrainingDataContextualShape a sh:NodeShape ;
+    sh:targetClass gai-act:HighRiskAISystem ;
+    sh:severity sh:Violation ;
+    sh:property [
+        sh:path gai-act:hasTrainingDataset ;
+        sh:minCount 1 ;
+        sh:node gai-act:DatasetContextualShape ;
+        sh:message "Art. 10(4): Training dataset must document contextual deployment characteristics."@en ;
+    ] .
+
+gai-act:ValidationDataContextualShape a sh:NodeShape ;
+    sh:targetClass gai-act:HighRiskAISystem ;
+    sh:severity sh:Violation ;
+    sh:property [
+        sh:path gai-act:hasValidationDataset ;
+        sh:minCount 1 ;
+        sh:node gai-act:DatasetContextualShape ;
+        sh:message "Art. 10(4): Validation dataset must document contextual deployment characteristics."@en ;
+    ] .
+
+gai-act:TestingDataContextualShape a sh:NodeShape ;
+    sh:targetClass gai-act:HighRiskAISystem ;
+    sh:severity sh:Violation ;
+    sh:property [
+        sh:path gai-act:hasTestingDataset ;
+        sh:minCount 1 ;
+        sh:node gai-act:DatasetContextualShape ;
+        sh:message "Art. 10(4): Testing dataset must document contextual deployment characteristics."@en ;
+    ] .
+
+
+# ──────────────────────────────────────────────────────────────────────────────
+#  FAMILY 5 — §10(5): Sensitive data processing conditional
+#  Tractability: ⚠️ Partial (SHACL-SPARQL conditional + documentation proxies)
+#
+#  Trigger: gai-act:processesSensitiveDataForBias = true
+#  If triggered: all 6 sub-conditions (5a–5f) must be documented.
+# ──────────────────────────────────────────────────────────────────────────────
+
+gai-act:SensitiveDataNecessityShape a sh:NodeShape ;
+    sh:targetClass gai-act:HighRiskAISystem ;
+    sh:severity sh:Violation ;
+    sh:sparql [
+        sh:message "Art. 10(5a): System processes sensitive data but lacks necessity justification (why other data insufficient)."@en ;
+        sh:prefixes [
+            sh:declare [
+                sh:prefix "gai-act" ;
+                sh:namespace "https://gelsi.com/gai-act#"^^xsd:anyURI ;
+            ] ;
+        ] ;
+        sh:select """
+            SELECT $this WHERE {
+                $this gai-act:processesSensitiveDataForBias true .
+                FILTER NOT EXISTS { $this gai-act:hasSensitiveDataNecessityDoc ?doc }
+            }
+        """ ;
+    ] .
+
+gai-act:SensitiveDataSecurityShape a sh:NodeShape ;
+    sh:targetClass gai-act:HighRiskAISystem ;
+    sh:severity sh:Violation ;
+    sh:sparql [
+        sh:message "Art. 10(5b): System processes sensitive data but lacks security and pseudonymisation documentation."@en ;
+        sh:prefixes [
+            sh:declare [
+                sh:prefix "gai-act" ;
+                sh:namespace "https://gelsi.com/gai-act#"^^xsd:anyURI ;
+            ] ;
+        ] ;
+        sh:select """
+            SELECT $this WHERE {
+                $this gai-act:processesSensitiveDataForBias true .
+                FILTER NOT EXISTS { $this gai-act:hasSensitiveDataSecurityDoc ?doc }
+            }
+        """ ;
+    ] .
+
+gai-act:SensitiveDataAccessControlShape a sh:NodeShape ;
+    sh:targetClass gai-act:HighRiskAISystem ;
+    sh:severity sh:Violation ;
+    sh:sparql [
+        sh:message "Art. 10(5c): System processes sensitive data but lacks access control documentation."@en ;
+        sh:prefixes [
+            sh:declare [
+                sh:prefix "gai-act" ;
+                sh:namespace "https://gelsi.com/gai-act#"^^xsd:anyURI ;
+            ] ;
+        ] ;
+        sh:select """
+            SELECT $this WHERE {
+                $this gai-act:processesSensitiveDataForBias true .
+                FILTER NOT EXISTS { $this gai-act:hasSensitiveDataAccessControlDoc ?doc }
+            }
+        """ ;
+    ] .
+
+gai-act:SensitiveDataTransferProhibitionShape a sh:NodeShape ;
+    sh:targetClass gai-act:HighRiskAISystem ;
+    sh:severity sh:Violation ;
+    sh:sparql [
+        sh:message "Art. 10(5d): System processes sensitive data but lacks transfer prohibition documentation."@en ;
+        sh:prefixes [
+            sh:declare [
+                sh:prefix "gai-act" ;
+                sh:namespace "https://gelsi.com/gai-act#"^^xsd:anyURI ;
+            ] ;
+        ] ;
+        sh:select """
+            SELECT $this WHERE {
+                $this gai-act:processesSensitiveDataForBias true .
+                FILTER NOT EXISTS { $this gai-act:hasSensitiveDataTransferProhibitionDoc ?doc }
+            }
+        """ ;
+    ] .
+
+gai-act:SensitiveDataDeletionShape a sh:NodeShape ;
+    sh:targetClass gai-act:HighRiskAISystem ;
+    sh:severity sh:Violation ;
+    sh:sparql [
+        sh:message "Art. 10(5e): System processes sensitive data but lacks deletion policy documentation."@en ;
+        sh:prefixes [
+            sh:declare [
+                sh:prefix "gai-act" ;
+                sh:namespace "https://gelsi.com/gai-act#"^^xsd:anyURI ;
+            ] ;
+        ] ;
+        sh:select """
+            SELECT $this WHERE {
+                $this gai-act:processesSensitiveDataForBias true .
+                FILTER NOT EXISTS { $this gai-act:hasSensitiveDataDeletionDoc ?doc }
+            }
+        """ ;
+    ] .
+
+gai-act:SensitiveDataProcessingRecordShape a sh:NodeShape ;
+    sh:targetClass gai-act:HighRiskAISystem ;
+    sh:severity sh:Violation ;
+    sh:sparql [
+        sh:message "Art. 10(5f): System processes sensitive data but lacks processing record justifying necessity."@en ;
+        sh:prefixes [
+            sh:declare [
+                sh:prefix "gai-act" ;
+                sh:namespace "https://gelsi.com/gai-act#"^^xsd:anyURI ;
+            ] ;
+        ] ;
+        sh:select """
+            SELECT $this WHERE {
+                $this gai-act:processesSensitiveDataForBias true .
+                FILTER NOT EXISTS { $this gai-act:hasSensitiveDataProcessingRecordDoc ?doc }
+            }
+        """ ;
+    ] .
+
+
+# ──────────────────────────────────────────────────────────────────────────────
+#  FAMILY 6 — §10(6): Non-training systems
+#  Tractability: ✅ Full (structural conditional via SPARQL)
+#
+#  For systems NOT using training techniques, §§10(2)-(5) apply ONLY to
+#  testing data. This shape warns if a non-training system has linked
+#  training or validation datasets (likely modelling error).
+# ──────────────────────────────────────────────────────────────────────────────
+
+gai-act:NonTrainingSystemShape a sh:NodeShape ;
+    sh:targetClass gai-act:HighRiskAISystem ;
+    sh:severity sh:Warning ;
+    sh:sparql [
+        sh:message "Art. 10(6): System is declared non-training but has training/validation datasets linked — verify modelling."@en ;
+        sh:prefixes [
+            sh:declare [
+                sh:prefix "gai-act" ;
+                sh:namespace "https://gelsi.com/gai-act#"^^xsd:anyURI ;
+            ] ;
+        ] ;
+        sh:select """
+            SELECT $this WHERE {
+                $this gai-act:usesTrainingTechniques false .
+                { $this gai-act:hasTrainingDataset ?d }
+                UNION
+                { $this gai-act:hasValidationDataset ?d }
+            }
+        """ ;
+    ] .
