@@ -103,6 +103,7 @@ from rdflib import BNode, Graph, Literal, Namespace
 from rdflib.namespace import RDF
 
 from bypass import bypass_judge, judgments_to_rdf
+from zeroshot import zeroshot_judge
 
 logging.basicConfig(
     level=logging.INFO,
@@ -692,6 +693,14 @@ def main() -> None:
         ),
     )
     parser.add_argument(
+        "--zeroshot",
+        action="store_true",
+        help=(
+            "Zero-shot baseline: minimal prompt with no obligation definitions. "
+            "Tests whether the model inherently knows Article 10."
+        ),
+    )
+    parser.add_argument(
         "--force",
         action="store_true",
         help="Re-extract the knowledge graph even if a cache file already exists (graphrag mode only)",
@@ -751,15 +760,32 @@ def main() -> None:
     outputs_dir = _REPO_ROOT / "outputs"
     outputs_dir.mkdir(exist_ok=True)
     slug = args.model.replace(":", "-").replace("/", "_")[:30]
-    mode_tag = "bypass" if args.bypass else "graphrag"
-    if args.strip_headers and not args.bypass:
+    if args.zeroshot:
+        mode_tag = "zeroshot"
+    elif args.bypass:
+        mode_tag = "bypass"
+    else:
+        mode_tag = "graphrag"
+    if args.strip_headers and mode_tag == "graphrag":
         mode_tag = f"{mode_tag}_stripped"
-    if args.judge and not args.bypass:
+    if args.judge and mode_tag == "graphrag":
         mode_tag = f"{mode_tag}_judge"
 
     run_start = time.perf_counter()
 
-    if args.bypass:
+    if args.zeroshot:
+        # ── Zero-shot mode: minimal prompt, no schema, no Neo4j ──────────
+        t0 = time.perf_counter()
+        judgments = asyncio.run(zeroshot_judge(text, llm))
+        judge_duration = round(time.perf_counter() - t0, 3)
+
+        t0 = time.perf_counter()
+        rdf_graph = judgments_to_rdf(judgments)
+        rdf_duration = round(time.perf_counter() - t0, 3)
+
+        extraction_metrics: dict = {"mode": "zeroshot", "duration_s": judge_duration}
+
+    elif args.bypass:
         # ── Bypass mode: one LLM call, no Neo4j ──────────────────────────
         t0 = time.perf_counter()
         judgments = asyncio.run(bypass_judge(text, llm))

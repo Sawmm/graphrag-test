@@ -41,10 +41,12 @@ neo4j_flag=""
 # Build mode list
 modes=()
 case "$MODE" in
+  all)      modes=(graphrag bypass zeroshot) ;;
   both)     modes=(graphrag bypass) ;;
   graphrag) modes=(graphrag) ;;
   bypass)   modes=(bypass) ;;
-  *) echo "MODE must be both|graphrag|bypass" >&2; exit 1 ;;
+  zeroshot) modes=(zeroshot) ;;
+  *) echo "MODE must be all|both|graphrag|bypass|zeroshot" >&2; exit 1 ;;
 esac
 
 shopt -s nullglob
@@ -66,15 +68,16 @@ for f in "${files[@]}"; do
   for m in "${modes[@]}"; do
     echo
     echo ">>> [$m] $f"
-    bypass_flag=""
-    [[ "$m" == "bypass" ]] && bypass_flag="--bypass"
+    mode_flag=""
+    [[ "$m" == "bypass" ]]   && mode_flag="--bypass"
+    [[ "$m" == "zeroshot" ]] && mode_flag="--zeroshot"
     if uv run python run.py \
         --input "$f" \
         --model "$MODEL" \
         --ollama-url "$OLLAMA_URL" \
         --neo4j-uri "$NEO4J_URI" \
         --neo4j-password "$NEO4J_PASSWORD" \
-        $bypass_flag $neo4j_flag $force_flag $EXTRA_ARGS; then
+        $mode_flag $neo4j_flag $force_flag $EXTRA_ARGS; then
       echo "<<< OK   [$m] $f"
     else
       echo "<<< FAIL [$m] $f" >&2
