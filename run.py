@@ -119,7 +119,7 @@ log = logging.getLogger(__name__)
 # ---------------------------------------------------------------------------
 
 MODEL_OPTIONS: dict = {
-    "options": {"temperature": 0, "num_ctx": 16384},
+    "options": {"temperature": 0, "num_ctx": 32768},
 }
 
 

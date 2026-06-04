@@ -13,15 +13,12 @@ Use with:  uv run python run.py --input model_card.md --model qwen2.5:7b --zeros
 
 from __future__ import annotations
 
-import json
 import logging
-import re
 
-import json_repair
 from neo4j_graphrag.llm.ollama_llm import OllamaLLM
 from neo4j_graphrag.types import LLMMessage
 
-from bypass import _OBLIGATION_KEYS, judgments_to_rdf  # reuse output mapping
+from bypass import _OBLIGATION_KEYS, _fill_defaults, _invoke_with_retry, judgments_to_rdf
 
 log = logging.getLogger(__name__)
 
@@ -53,28 +50,8 @@ async def zeroshot_judge(text: str, llm: OllamaLLM) -> dict:
         LLMMessage(role="user", content=f"Model card:\n\n{text}"),
     ]
     log.info("Zero-shot: sending document to LLM (%d chars)", len(text))
-    result = await llm.ainvoke(messages)
-    raw = result.content.strip()
-
-    if raw.startswith("```"):
-        raw = re.sub(r"^```[a-z]*\n?", "", raw)
-        raw = re.sub(r"\n?```$", "", raw)
-
-    repaired = json_repair.repair_json(raw)
-    try:
-        judgments: dict = json.loads(repaired)
-    except json.JSONDecodeError as e:
-        raise ValueError(
-            f"Zero-shot judge returned unparseable JSON: {e}\nRaw: {raw[:500]}"
-        ) from e
-
-    for ds in ("training", "validation", "testing"):
-        judgments.setdefault(ds, {})
-        for key in _OBLIGATION_KEYS:
-            judgments[ds].setdefault(key, False)
-    for key in ("has_training_dataset", "has_validation_dataset", "has_testing_dataset"):
-        judgments.setdefault(key, False)
-
+    judgments = await _invoke_with_retry(messages, llm, "Zero-shot judge")
+    judgments = _fill_defaults(judgments)
     log.info(
         "Zero-shot judgment — training: %s  validation: %s  testing: %s",
         judgments["has_training_dataset"],

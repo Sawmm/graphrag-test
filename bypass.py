@@ -124,6 +124,60 @@ _PREDICATE_MAP = {
 # Public API
 # ---------------------------------------------------------------------------
 
+def _parse_judgment(raw: str, label: str) -> dict:
+    """Parse LLM output into a judgment dict, handling fences, lists, junk."""
+    raw = raw.strip()
+    if raw.startswith("```"):
+        raw = re.sub(r"^```[a-z]*\n?", "", raw)
+        raw = re.sub(r"\n?```$", "", raw)
+    # Extract first {...} block if model added prose around it
+    m = re.search(r"\{.*\}", raw, re.DOTALL)
+    if m:
+        raw = m.group(0)
+    repaired = json_repair.repair_json(raw)
+    parsed = json.loads(repaired) if repaired else {}
+    # Sometimes models return [ {...} ] — unwrap
+    if isinstance(parsed, list):
+        parsed = next((x for x in parsed if isinstance(x, dict)), {})
+    if not isinstance(parsed, dict):
+        raise ValueError(f"{label} returned non-dict JSON: {type(parsed).__name__}; raw: {raw[:300]}")
+    return parsed
+
+
+def _fill_defaults(judgments: dict) -> dict:
+    for ds in ("training", "validation", "testing"):
+        v = judgments.get(ds)
+        if not isinstance(v, dict):
+            v = {}
+        for key in _OBLIGATION_KEYS:
+            v.setdefault(key, False)
+        judgments[ds] = v
+    for key in ("has_training_dataset", "has_validation_dataset", "has_testing_dataset"):
+        judgments.setdefault(key, False)
+    return judgments
+
+
+async def _invoke_with_retry(messages, llm: OllamaLLM, label: str, retries: int = 1) -> dict:
+    last_raw = ""
+    for attempt in range(retries + 1):
+        result = await llm.ainvoke(messages)
+        last_raw = result.content
+        try:
+            return _parse_judgment(last_raw, label)
+        except (json.JSONDecodeError, ValueError) as e:
+            log.warning("%s parse failed (attempt %d/%d): %s", label, attempt + 1, retries + 1, e)
+            if attempt == retries:
+                raise ValueError(
+                    f"{label} returned unparseable JSON after {retries + 1} attempts: {e}\n"
+                    f"Raw: {last_raw[:500]}"
+                ) from e
+            # Retry with a reminder appended
+            messages = messages + [
+                LLMMessage(role="user", content="Your previous reply was not valid JSON. Reply with ONLY the JSON object, no prose, no markdown fences."),
+            ]
+    raise RuntimeError("unreachable")
+
+
 async def bypass_judge(text: str, llm: OllamaLLM) -> dict:
     """
     Send the full document to the LLM and return a structured compliance dict.
@@ -137,30 +191,8 @@ async def bypass_judge(text: str, llm: OllamaLLM) -> dict:
         LLMMessage(role="user", content=f"Model card:\n\n{text}"),
     ]
     log.info("Bypass: sending document to LLM (%d chars)", len(text))
-    result = await llm.ainvoke(messages)
-    raw = result.content.strip()
-
-    # Strip markdown code fences if the model wrapped the JSON
-    if raw.startswith("```"):
-        raw = re.sub(r"^```[a-z]*\n?", "", raw)
-        raw = re.sub(r"\n?```$", "", raw)
-
-    repaired = json_repair.repair_json(raw)
-    try:
-        judgments: dict = json.loads(repaired)
-    except json.JSONDecodeError as e:
-        raise ValueError(
-            f"Bypass judge returned unparseable JSON: {e}\nRaw: {raw[:500]}"
-        ) from e
-
-    # Fill in any missing keys with safe defaults
-    for ds in ("training", "validation", "testing"):
-        judgments.setdefault(ds, {})
-        for key in _OBLIGATION_KEYS:
-            judgments[ds].setdefault(key, False)
-    for key in ("has_training_dataset", "has_validation_dataset", "has_testing_dataset"):
-        judgments.setdefault(key, False)
-
+    judgments = await _invoke_with_retry(messages, llm, "Bypass judge")
+    judgments = _fill_defaults(judgments)
     log.info(
         "Bypass judgment — training: %s  validation: %s  testing: %s",
         judgments["has_training_dataset"],
