@@ -1,31 +1,53 @@
-# Python-generated files
+# ── Python / build ──────────────────────────────────────────────────────────
 __pycache__/
 *.py[oc]
 build/
 dist/
 wheels/
-*.egg-info
+*.egg-info/
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
 
-# Virtual environments
-.venv
+# ── Virtual environments ────────────────────────────────────────────────────
+.venv/
+venv/
+env/
 
-# PDFs (cluster docs, etc.)
-*.pdf
-
-# OS junk
+# ── OS junk ─────────────────────────────────────────────────────────────────
 .DS_Store
+Thumbs.db
+nano
 
-# Generated run artifacts / caches — do not upload
-cache/
+# ── IDE / editor ────────────────────────────────────────────────────────────
+.idea/
+.vscode/
+*.swp
+*.swo
+.claude/
+
+# ── Generated run artifacts (any outputs_* / cache_* variant) ───────────────
 outputs/
+outputs_*/
+cache/
+cache_*/
 analysis/
+thesis/
 
-# Cluster job logs / scratch
+# ── Cluster job logs ────────────────────────────────────────────────────────
 cluster/logs/
 *.out
 *.err
 slurm-*.out
 
-# Local Neo4j data (if running a container with a bind mount)
+# ── Local Neo4j / Ollama state (local or cluster) ───────────────────────────
 neo4j-data/
 neo4j-logs/
+ollama-models/
+*.sif
+
+# ── Reference PDFs (DAS docs etc., not part of the codebase) ────────────────
+*.pdf
+
+# ── Raw input HF cards (we ship only the normalized/ versions) ─────────────
+inputs/raw/

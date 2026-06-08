@@ -111,6 +111,37 @@ OBLIGATION_GROUND_TRUTH: dict[str, dict[str, dict[str, bool]]] = {
     },
 }
 
+
+def _load_gold_csv() -> None:
+    """Merge filled rows from gold/labels_*.csv into OBLIGATION_GROUND_TRUTH.
+
+    Only rows with a 1/0 in 'present' are loaded. Real cards in the CSV win
+    over hardcoded entries; synthetic cards stay hardcoded.
+    """
+    import csv
+    gold_dir = Path(__file__).parent / "gold"
+    if not gold_dir.exists():
+        return
+    for csv_path in sorted(gold_dir.glob("labels_*.csv")):
+        if csv_path.name == "labels_template.csv":
+            continue
+        with csv_path.open(encoding="utf-8-sig") as f:
+            first = f.readline()
+            if not first.lower().startswith("sep="):
+                f.seek(0)
+            reader = csv.DictReader(f, delimiter=";" if ";" in first and "," not in first.split(";")[0] else ",")
+            for row in reader:
+                present = (row.get("present") or "").strip()
+                if present not in ("0", "1"):
+                    continue
+                doc = row["document"].strip()
+                sec = row["dataset_section"].strip()
+                ob  = row["obligation"].strip()
+                OBLIGATION_GROUND_TRUTH.setdefault(doc, {}).setdefault(sec, {})[ob] = (present == "1")
+
+
+_load_gold_csv()
+
 # ── Matplotlib style for LaTeX-compatible PDF output ────────────────────────
 
 def _apply_thesis_style() -> None:
@@ -148,7 +179,7 @@ def parse_ttl_name(path: Path) -> tuple[str, str, str]:
     """
     stem = path.stem
     parts = stem.split("__")
-    if len(parts) >= 3 and parts[-1] in ("graphrag", "bypass"):
+    if len(parts) >= 3 and parts[-1] in ("graphrag", "bypass", "zeroshot"):
         mode  = parts[-1]
         model = parts[-2]
         doc   = "__".join(parts[:-2])
@@ -345,6 +376,100 @@ def compute_precision_recall(compliance_records: list[dict]) -> pd.DataFrame:
             "accuracy":  round((tp + tn) / total, 3) if total else 0.0,
         })
     return pd.DataFrame(rows)
+
+
+# ── Per-obligation present-class metrics + support ──────────────────────────
+
+# Minimum gold positives ("present") needed before a per-obligation recall is
+# trustworthy. Real medical cards are ~80% "not provided", so many obligations
+# have too few positives to estimate recall from — those are flagged, not used
+# for capability claims.
+SUPPORT_THRESHOLD = 5
+
+
+def compute_per_obligation_metrics(
+    compliance_records: list[dict], by_section: bool = False
+) -> pd.DataFrame:
+    """Present-class precision/recall/F1 per obligation, pooled across all runs
+    that have ground truth, plus the gold support (# expected-present).
+
+    'present' is the positive class: tp = predicted present AND expected present.
+    """
+    agg: dict[tuple, dict[str, int]] = defaultdict(
+        lambda: {"tp": 0, "fp": 0, "fn": 0, "tn": 0, "n_eval": 0}
+    )
+    # support = number of DISTINCT (document, section) gold positives for the
+    # obligation, counted once regardless of how many model×mode runs touched
+    # that card. This reflects how many real examples exist to estimate recall
+    # from — pooling across repeated runs of the same card would inflate it.
+    support_docs: dict[tuple, set[tuple]] = defaultdict(set)
+    for rec in compliance_records:
+        gt = OBLIGATION_GROUND_TRUTH.get(rec["document"])
+        if gt is None:
+            continue
+        for sec in ("training", "validation", "testing"):
+            for ob, predicted in rec.get(sec, {}).items():
+                expected = gt.get(sec, {}).get(ob)
+                if expected is None:
+                    continue
+                key = (ob, sec) if by_section else (ob,)
+                a = agg[key]
+                a["tp"] += int(predicted and expected)
+                a["fp"] += int(predicted and not expected)
+                a["fn"] += int(not predicted and expected)
+                a["tn"] += int(not predicted and not expected)
+                a["n_eval"] += 1
+                if expected:
+                    support_docs[key].add((rec["document"], sec))
+
+    rows = []
+    for key, a in agg.items():
+        tp, fp, fn = a["tp"], a["fp"], a["fn"]
+        support = len(support_docs[key])
+        precision = tp / (tp + fp) if (tp + fp) else 0.0
+        recall    = tp / (tp + fn) if (tp + fn) else 0.0
+        f1 = (2 * precision * recall / (precision + recall)
+              if (precision + recall) else 0.0)
+        row = {"obligation": key[0]}
+        if by_section:
+            row["section"] = key[1]
+        row.update({
+            "support":            support,
+            "n_eval":             a["n_eval"],
+            "tp": tp, "fp": fp, "fn": fn,
+            "precision":          round(precision, 3),
+            "recall":             round(recall, 3),
+            "f1":                 round(f1, 3),
+            "sufficient_support": support >= SUPPORT_THRESHOLD,
+        })
+        rows.append(row)
+
+    df = pd.DataFrame(rows)
+    if not df.empty:
+        df = df.sort_values("support", ascending=False).reset_index(drop=True)
+    return df
+
+
+def plot_per_obligation_f1(per_ob_df: pd.DataFrame, out_dir: Path) -> str:
+    """Horizontal F1 bars per obligation; low-support obligations greyed out."""
+    if per_ob_df.empty:
+        return ""
+    df = per_ob_df.sort_values("f1").reset_index(drop=True)
+    colours = ["#27ae60" if s else "#bbbbbb" for s in df["sufficient_support"]]
+    labels  = [f"{o}  (n+={s})" for o, s in zip(df["obligation"], df["support"])]
+
+    fig, ax = plt.subplots(figsize=(9, max(3, len(df) * 0.4)))
+    bars = ax.barh(range(len(df)), df["f1"], color=colours, edgecolor="white")
+    ax.bar_label(bars, labels=[f"{v:.2f}" for v in df["f1"]], padding=3, fontsize=7)
+    ax.set_yticks(range(len(df)))
+    ax.set_yticklabels(labels, fontsize=8)
+    ax.set_xlim(0, 1.1)
+    ax.set_xlabel("Present-class F1")
+    ax.set_title(f"Per-Obligation Detection F1  "
+                 f"(grey = support < {SUPPORT_THRESHOLD}, recall unreliable)")
+    ax.grid(axis="x", alpha=0.3)
+    fig.tight_layout()
+    return _savefig(fig, out_dir, "per_obligation_f1")
 
 
 def plot_precision_recall(pr_df: pd.DataFrame, out_dir: Path) -> str:
@@ -863,6 +988,7 @@ def render_report(
     missed_df: pd.DataFrame,
     mode_comparison_df: pd.DataFrame,
     pr_df: pd.DataFrame,
+    per_ob_df: pd.DataFrame,
     out_dir: Path,
 ) -> None:
     report_lines: list[str] = []
@@ -1024,6 +1150,39 @@ def render_report(
     else:
         print("  No documents with per-obligation ground truth found.")
 
+    # ── 11. Per-obligation present-class detection + support ──────────────────
+    _section("11. Per-Obligation Present-Class Detection (with gold support)")
+    if not per_ob_df.empty:
+        show = per_ob_df[["obligation", "support", "n_eval", "tp", "fp", "fn",
+                          "precision", "recall", "f1", "sufficient_support"]]
+        out = show.to_string(index=False)
+        print(out)
+        rline("\n=== 11. Per-Obligation Detection ===")
+        rline(out)
+
+        # Pooled (micro) present-class metrics across all obligations.
+        tp = int(per_ob_df["tp"].sum()); fp = int(per_ob_df["fp"].sum()); fn = int(per_ob_df["fn"].sum())
+        micro_p = tp / (tp + fp) if (tp + fp) else 0.0
+        micro_r = tp / (tp + fn) if (tp + fn) else 0.0
+        micro_f1 = (2 * micro_p * micro_r / (micro_p + micro_r)) if (micro_p + micro_r) else 0.0
+
+        # Macro over obligations with enough gold positives to trust recall.
+        ok = per_ob_df[per_ob_df["sufficient_support"]]
+        macro_f1 = round(ok["f1"].mean(), 3) if not ok.empty else float("nan")
+        n_low = int((~per_ob_df["sufficient_support"]).sum())
+
+        summary = (
+            f"\n  Present-class micro — P: {micro_p:.3f}  R: {micro_r:.3f}  F1: {micro_f1:.3f}"
+            f"\n  Macro F1 over {len(ok)} sufficiently-supported obligations "
+            f"(support ≥ {SUPPORT_THRESHOLD}): {macro_f1}"
+            f"\n  {n_low} obligation(s) below support threshold — recall unreliable, "
+            f"excluded from macro."
+        )
+        print(summary)
+        rline(summary)
+    else:
+        print("  No per-obligation ground truth to evaluate against.")
+
     # ── Save text report ──────────────────────────────────────────────────────
     report_path = out_dir / "report.txt"
     report_path.write_text("\n".join(report_lines), encoding="utf-8")
@@ -1073,6 +1232,7 @@ def main() -> None:
     missed_df          = compute_missed_obligations(compliance_records) if compliance_records else pd.DataFrame()
     mode_comparison_df = compute_mode_comparison(compliance_records) if compliance_records else pd.DataFrame()
     pr_df              = compute_precision_recall(compliance_records) if compliance_records else pd.DataFrame()
+    per_ob_df          = compute_per_obligation_metrics(compliance_records) if compliance_records else pd.DataFrame()
 
     # ── Save CSVs
     if not kg_df.empty:
@@ -1109,6 +1269,8 @@ def main() -> None:
         mode_comparison_df.to_csv(out_dir / "mode_comparison.csv", index=False)
     if not pr_df.empty:
         pr_df.to_csv(out_dir / "precision_recall.csv", index=False)
+    if not per_ob_df.empty:
+        per_ob_df.to_csv(out_dir / "per_obligation_metrics.csv", index=False)
 
     # ── Generate plots (all saved as PDF)
     plots_generated: list[str] = []
@@ -1130,10 +1292,12 @@ def main() -> None:
         plots_generated.extend(plot_mode_comparison(compliance_records, shacl_records, out_dir))
     if not pr_df.empty:
         plots_generated.append(plot_precision_recall(pr_df, out_dir))
+    if not per_ob_df.empty:
+        plots_generated.append(plot_per_obligation_f1(per_ob_df, out_dir))
 
     # ── Console + text report
     render_report(kg_df, compliance_records, shacl_records, agree_df, entity_df,
-                  gt_df, missed_df, mode_comparison_df, pr_df, out_dir)
+                  gt_df, missed_df, mode_comparison_df, pr_df, per_ob_df, out_dir)
 
     print(f"\n{'─' * 72}")
     print(f"  Outputs saved to: {out_dir}/")

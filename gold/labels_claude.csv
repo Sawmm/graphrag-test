@@ -1,0 +1,392 @@
+﻿sep=,
+document,dataset_section,obligation,present,adequate,notes,annotator
+allenai__biomed_roberta_base_annex_iv,training,design_choices,1,,,claude
+allenai__biomed_roberta_base_annex_iv,training,provenance,1,,,claude
+allenai__biomed_roberta_base_annex_iv,training,preprocessing,1,,,claude
+allenai__biomed_roberta_base_annex_iv,training,assumptions,0,,,claude
+allenai__biomed_roberta_base_annex_iv,training,suitability,1,,,claude
+allenai__biomed_roberta_base_annex_iv,training,bias_examination,0,,,claude
+allenai__biomed_roberta_base_annex_iv,training,bias_mitigation,0,,,claude
+allenai__biomed_roberta_base_annex_iv,training,data_gap,0,,,claude
+allenai__biomed_roberta_base_annex_iv,training,relevance,1,,,claude
+allenai__biomed_roberta_base_annex_iv,training,representativeness,0,,,claude
+allenai__biomed_roberta_base_annex_iv,training,statistical_props,1,,,claude
+allenai__biomed_roberta_base_annex_iv,training,quality_metrics,0,,,claude
+allenai__biomed_roberta_base_annex_iv,training,contextual_characteristics,0,,,claude
+allenai__biomed_roberta_base_annex_iv,validation,design_choices,0,,,claude
+allenai__biomed_roberta_base_annex_iv,validation,provenance,0,,,claude
+allenai__biomed_roberta_base_annex_iv,validation,preprocessing,0,,,claude
+allenai__biomed_roberta_base_annex_iv,validation,assumptions,0,,,claude
+allenai__biomed_roberta_base_annex_iv,validation,suitability,0,,,claude
+allenai__biomed_roberta_base_annex_iv,validation,bias_examination,0,,,claude
+allenai__biomed_roberta_base_annex_iv,validation,bias_mitigation,0,,,claude
+allenai__biomed_roberta_base_annex_iv,validation,data_gap,0,,,claude
+allenai__biomed_roberta_base_annex_iv,validation,relevance,0,,,claude
+allenai__biomed_roberta_base_annex_iv,validation,representativeness,0,,,claude
+allenai__biomed_roberta_base_annex_iv,validation,statistical_props,0,,,claude
+allenai__biomed_roberta_base_annex_iv,validation,quality_metrics,0,,,claude
+allenai__biomed_roberta_base_annex_iv,validation,contextual_characteristics,0,,,claude
+allenai__biomed_roberta_base_annex_iv,testing,design_choices,1,,,claude
+allenai__biomed_roberta_base_annex_iv,testing,provenance,1,,,claude
+allenai__biomed_roberta_base_annex_iv,testing,preprocessing,0,,,claude
+allenai__biomed_roberta_base_annex_iv,testing,assumptions,0,,,claude
+allenai__biomed_roberta_base_annex_iv,testing,suitability,1,,,claude
+allenai__biomed_roberta_base_annex_iv,testing,bias_examination,0,,,claude
+allenai__biomed_roberta_base_annex_iv,testing,bias_mitigation,0,,,claude
+allenai__biomed_roberta_base_annex_iv,testing,data_gap,1,,,claude
+allenai__biomed_roberta_base_annex_iv,testing,relevance,1,,,claude
+allenai__biomed_roberta_base_annex_iv,testing,representativeness,0,,,claude
+allenai__biomed_roberta_base_annex_iv,testing,statistical_props,1,,,claude
+allenai__biomed_roberta_base_annex_iv,testing,quality_metrics,0,,,claude
+allenai__biomed_roberta_base_annex_iv,testing,contextual_characteristics,0,,,claude
+emilyalsentzer__Bio_ClinicalBERT_annex_iv,training,design_choices,1,,,claude
+emilyalsentzer__Bio_ClinicalBERT_annex_iv,training,provenance,1,,,claude
+emilyalsentzer__Bio_ClinicalBERT_annex_iv,training,preprocessing,1,,,claude
+emilyalsentzer__Bio_ClinicalBERT_annex_iv,training,assumptions,1,,,claude
+emilyalsentzer__Bio_ClinicalBERT_annex_iv,training,suitability,1,,,claude
+emilyalsentzer__Bio_ClinicalBERT_annex_iv,training,bias_examination,0,,,claude
+emilyalsentzer__Bio_ClinicalBERT_annex_iv,training,bias_mitigation,0,,,claude
+emilyalsentzer__Bio_ClinicalBERT_annex_iv,training,data_gap,0,,,claude
+emilyalsentzer__Bio_ClinicalBERT_annex_iv,training,relevance,1,,,claude
+emilyalsentzer__Bio_ClinicalBERT_annex_iv,training,representativeness,0,,,claude
+emilyalsentzer__Bio_ClinicalBERT_annex_iv,training,statistical_props,1,,,claude
+emilyalsentzer__Bio_ClinicalBERT_annex_iv,training,quality_metrics,0,,,claude
+emilyalsentzer__Bio_ClinicalBERT_annex_iv,training,contextual_characteristics,1,,,claude
+emilyalsentzer__Bio_ClinicalBERT_annex_iv,validation,design_choices,0,,,claude
+emilyalsentzer__Bio_ClinicalBERT_annex_iv,validation,provenance,0,,,claude
+emilyalsentzer__Bio_ClinicalBERT_annex_iv,validation,preprocessing,0,,,claude
+emilyalsentzer__Bio_ClinicalBERT_annex_iv,validation,assumptions,0,,,claude
+emilyalsentzer__Bio_ClinicalBERT_annex_iv,validation,suitability,0,,,claude
+emilyalsentzer__Bio_ClinicalBERT_annex_iv,validation,bias_examination,0,,,claude
+emilyalsentzer__Bio_ClinicalBERT_annex_iv,validation,bias_mitigation,0,,,claude
+emilyalsentzer__Bio_ClinicalBERT_annex_iv,validation,data_gap,0,,,claude
+emilyalsentzer__Bio_ClinicalBERT_annex_iv,validation,relevance,0,,,claude
+emilyalsentzer__Bio_ClinicalBERT_annex_iv,validation,representativeness,0,,,claude
+emilyalsentzer__Bio_ClinicalBERT_annex_iv,validation,statistical_props,0,,,claude
+emilyalsentzer__Bio_ClinicalBERT_annex_iv,validation,quality_metrics,0,,,claude
+emilyalsentzer__Bio_ClinicalBERT_annex_iv,validation,contextual_characteristics,0,,,claude
+emilyalsentzer__Bio_ClinicalBERT_annex_iv,testing,design_choices,0,,,claude
+emilyalsentzer__Bio_ClinicalBERT_annex_iv,testing,provenance,0,,,claude
+emilyalsentzer__Bio_ClinicalBERT_annex_iv,testing,preprocessing,0,,,claude
+emilyalsentzer__Bio_ClinicalBERT_annex_iv,testing,assumptions,0,,,claude
+emilyalsentzer__Bio_ClinicalBERT_annex_iv,testing,suitability,0,,,claude
+emilyalsentzer__Bio_ClinicalBERT_annex_iv,testing,bias_examination,0,,,claude
+emilyalsentzer__Bio_ClinicalBERT_annex_iv,testing,bias_mitigation,0,,,claude
+emilyalsentzer__Bio_ClinicalBERT_annex_iv,testing,data_gap,0,,,claude
+emilyalsentzer__Bio_ClinicalBERT_annex_iv,testing,relevance,0,,,claude
+emilyalsentzer__Bio_ClinicalBERT_annex_iv,testing,representativeness,0,,,claude
+emilyalsentzer__Bio_ClinicalBERT_annex_iv,testing,statistical_props,0,,,claude
+emilyalsentzer__Bio_ClinicalBERT_annex_iv,testing,quality_metrics,0,,,claude
+emilyalsentzer__Bio_ClinicalBERT_annex_iv,testing,contextual_characteristics,0,,,claude
+epfl-llm__meditron-7b_annex_iv,training,design_choices,1,,,claude
+epfl-llm__meditron-7b_annex_iv,training,provenance,1,,,claude
+epfl-llm__meditron-7b_annex_iv,training,preprocessing,1,,,claude
+epfl-llm__meditron-7b_annex_iv,training,assumptions,1,,,claude
+epfl-llm__meditron-7b_annex_iv,training,suitability,1,,,claude
+epfl-llm__meditron-7b_annex_iv,training,bias_examination,0,,,claude
+epfl-llm__meditron-7b_annex_iv,training,bias_mitigation,0,,,claude
+epfl-llm__meditron-7b_annex_iv,training,data_gap,1,,,claude
+epfl-llm__meditron-7b_annex_iv,training,relevance,1,,,claude
+epfl-llm__meditron-7b_annex_iv,training,representativeness,0,,,claude
+epfl-llm__meditron-7b_annex_iv,training,statistical_props,1,,,claude
+epfl-llm__meditron-7b_annex_iv,training,quality_metrics,1,,,claude
+epfl-llm__meditron-7b_annex_iv,training,contextual_characteristics,0,,,claude
+epfl-llm__meditron-7b_annex_iv,validation,design_choices,0,,,claude
+epfl-llm__meditron-7b_annex_iv,validation,provenance,0,,,claude
+epfl-llm__meditron-7b_annex_iv,validation,preprocessing,0,,,claude
+epfl-llm__meditron-7b_annex_iv,validation,assumptions,0,,,claude
+epfl-llm__meditron-7b_annex_iv,validation,suitability,0,,,claude
+epfl-llm__meditron-7b_annex_iv,validation,bias_examination,0,,,claude
+epfl-llm__meditron-7b_annex_iv,validation,bias_mitigation,0,,,claude
+epfl-llm__meditron-7b_annex_iv,validation,data_gap,0,,,claude
+epfl-llm__meditron-7b_annex_iv,validation,relevance,0,,,claude
+epfl-llm__meditron-7b_annex_iv,validation,representativeness,0,,,claude
+epfl-llm__meditron-7b_annex_iv,validation,statistical_props,0,,,claude
+epfl-llm__meditron-7b_annex_iv,validation,quality_metrics,0,,,claude
+epfl-llm__meditron-7b_annex_iv,validation,contextual_characteristics,0,,,claude
+epfl-llm__meditron-7b_annex_iv,testing,design_choices,1,,,claude
+epfl-llm__meditron-7b_annex_iv,testing,provenance,1,,,claude
+epfl-llm__meditron-7b_annex_iv,testing,preprocessing,1,,,claude
+epfl-llm__meditron-7b_annex_iv,testing,assumptions,1,,,claude
+epfl-llm__meditron-7b_annex_iv,testing,suitability,1,,,claude
+epfl-llm__meditron-7b_annex_iv,testing,bias_examination,1,,,claude
+epfl-llm__meditron-7b_annex_iv,testing,bias_mitigation,0,,,claude
+epfl-llm__meditron-7b_annex_iv,testing,data_gap,0,,,claude
+epfl-llm__meditron-7b_annex_iv,testing,relevance,1,,,claude
+epfl-llm__meditron-7b_annex_iv,testing,representativeness,0,,,claude
+epfl-llm__meditron-7b_annex_iv,testing,statistical_props,1,,,claude
+epfl-llm__meditron-7b_annex_iv,testing,quality_metrics,1,,,claude
+epfl-llm__meditron-7b_annex_iv,testing,contextual_characteristics,1,,,claude
+google__medgemma-4b-it_annex_iv,training,design_choices,1,,,claude
+google__medgemma-4b-it_annex_iv,training,provenance,1,,,claude
+google__medgemma-4b-it_annex_iv,training,preprocessing,1,,,claude
+google__medgemma-4b-it_annex_iv,training,assumptions,1,,,claude
+google__medgemma-4b-it_annex_iv,training,suitability,1,,,claude
+google__medgemma-4b-it_annex_iv,training,bias_examination,1,,,claude
+google__medgemma-4b-it_annex_iv,training,bias_mitigation,0,,,claude
+google__medgemma-4b-it_annex_iv,training,data_gap,1,,,claude
+google__medgemma-4b-it_annex_iv,training,relevance,1,,,claude
+google__medgemma-4b-it_annex_iv,training,representativeness,1,,,claude
+google__medgemma-4b-it_annex_iv,training,statistical_props,0,,,claude
+google__medgemma-4b-it_annex_iv,training,quality_metrics,0,,,claude
+google__medgemma-4b-it_annex_iv,training,contextual_characteristics,1,,,claude
+google__medgemma-4b-it_annex_iv,validation,design_choices,1,,,claude
+google__medgemma-4b-it_annex_iv,validation,provenance,1,,,claude
+google__medgemma-4b-it_annex_iv,validation,preprocessing,0,,,claude
+google__medgemma-4b-it_annex_iv,validation,assumptions,1,,,claude
+google__medgemma-4b-it_annex_iv,validation,suitability,1,,,claude
+google__medgemma-4b-it_annex_iv,validation,bias_examination,0,,,claude
+google__medgemma-4b-it_annex_iv,validation,bias_mitigation,0,,,claude
+google__medgemma-4b-it_annex_iv,validation,data_gap,1,,,claude
+google__medgemma-4b-it_annex_iv,validation,relevance,1,,,claude
+google__medgemma-4b-it_annex_iv,validation,representativeness,1,,,claude
+google__medgemma-4b-it_annex_iv,validation,statistical_props,1,,,claude
+google__medgemma-4b-it_annex_iv,validation,quality_metrics,1,,,claude
+google__medgemma-4b-it_annex_iv,validation,contextual_characteristics,0,,,claude
+google__medgemma-4b-it_annex_iv,testing,design_choices,0,,,claude
+google__medgemma-4b-it_annex_iv,testing,provenance,0,,,claude
+google__medgemma-4b-it_annex_iv,testing,preprocessing,0,,,claude
+google__medgemma-4b-it_annex_iv,testing,assumptions,0,,,claude
+google__medgemma-4b-it_annex_iv,testing,suitability,0,,,claude
+google__medgemma-4b-it_annex_iv,testing,bias_examination,0,,,claude
+google__medgemma-4b-it_annex_iv,testing,bias_mitigation,0,,,claude
+google__medgemma-4b-it_annex_iv,testing,data_gap,0,,,claude
+google__medgemma-4b-it_annex_iv,testing,relevance,0,,,claude
+google__medgemma-4b-it_annex_iv,testing,representativeness,0,,,claude
+google__medgemma-4b-it_annex_iv,testing,statistical_props,0,,,claude
+google__medgemma-4b-it_annex_iv,testing,quality_metrics,0,,,claude
+google__medgemma-4b-it_annex_iv,testing,contextual_characteristics,0,,,claude
+google__medgemma-4b-it_compliant,training,design_choices,1,,,claude
+google__medgemma-4b-it_compliant,training,provenance,1,,,claude
+google__medgemma-4b-it_compliant,training,preprocessing,1,,,claude
+google__medgemma-4b-it_compliant,training,assumptions,1,,,claude
+google__medgemma-4b-it_compliant,training,suitability,1,,,claude
+google__medgemma-4b-it_compliant,training,bias_examination,1,,,claude
+google__medgemma-4b-it_compliant,training,bias_mitigation,1,,,claude
+google__medgemma-4b-it_compliant,training,data_gap,1,,,claude
+google__medgemma-4b-it_compliant,training,relevance,1,,,claude
+google__medgemma-4b-it_compliant,training,representativeness,1,,,claude
+google__medgemma-4b-it_compliant,training,statistical_props,1,,,claude
+google__medgemma-4b-it_compliant,training,quality_metrics,1,,,claude
+google__medgemma-4b-it_compliant,training,contextual_characteristics,1,,,claude
+google__medgemma-4b-it_compliant,validation,design_choices,1,,,claude
+google__medgemma-4b-it_compliant,validation,provenance,1,,,claude
+google__medgemma-4b-it_compliant,validation,preprocessing,1,,,claude
+google__medgemma-4b-it_compliant,validation,assumptions,1,,,claude
+google__medgemma-4b-it_compliant,validation,suitability,1,,,claude
+google__medgemma-4b-it_compliant,validation,bias_examination,1,,,claude
+google__medgemma-4b-it_compliant,validation,bias_mitigation,1,,,claude
+google__medgemma-4b-it_compliant,validation,data_gap,1,,,claude
+google__medgemma-4b-it_compliant,validation,relevance,1,,,claude
+google__medgemma-4b-it_compliant,validation,representativeness,1,,,claude
+google__medgemma-4b-it_compliant,validation,statistical_props,1,,,claude
+google__medgemma-4b-it_compliant,validation,quality_metrics,1,,,claude
+google__medgemma-4b-it_compliant,validation,contextual_characteristics,1,,,claude
+google__medgemma-4b-it_compliant,testing,design_choices,1,,,claude
+google__medgemma-4b-it_compliant,testing,provenance,1,,,claude
+google__medgemma-4b-it_compliant,testing,preprocessing,1,,,claude
+google__medgemma-4b-it_compliant,testing,assumptions,1,,,claude
+google__medgemma-4b-it_compliant,testing,suitability,1,,,claude
+google__medgemma-4b-it_compliant,testing,bias_examination,1,,,claude
+google__medgemma-4b-it_compliant,testing,bias_mitigation,1,,,claude
+google__medgemma-4b-it_compliant,testing,data_gap,1,,,claude
+google__medgemma-4b-it_compliant,testing,relevance,1,,,claude
+google__medgemma-4b-it_compliant,testing,representativeness,1,,,claude
+google__medgemma-4b-it_compliant,testing,statistical_props,1,,,claude
+google__medgemma-4b-it_compliant,testing,quality_metrics,1,,,claude
+google__medgemma-4b-it_compliant,testing,contextual_characteristics,1,,,claude
+microsoft__BiomedCLIP-PubMedBERT_256-vit_base_patch16_224_annex_iv,training,design_choices,1,,,claude
+microsoft__BiomedCLIP-PubMedBERT_256-vit_base_patch16_224_annex_iv,training,provenance,1,,,claude
+microsoft__BiomedCLIP-PubMedBERT_256-vit_base_patch16_224_annex_iv,training,preprocessing,1,,,claude
+microsoft__BiomedCLIP-PubMedBERT_256-vit_base_patch16_224_annex_iv,training,assumptions,1,,,claude
+microsoft__BiomedCLIP-PubMedBERT_256-vit_base_patch16_224_annex_iv,training,suitability,1,,,claude
+microsoft__BiomedCLIP-PubMedBERT_256-vit_base_patch16_224_annex_iv,training,bias_examination,0,,,claude
+microsoft__BiomedCLIP-PubMedBERT_256-vit_base_patch16_224_annex_iv,training,bias_mitigation,0,,,claude
+microsoft__BiomedCLIP-PubMedBERT_256-vit_base_patch16_224_annex_iv,training,data_gap,1,,,claude
+microsoft__BiomedCLIP-PubMedBERT_256-vit_base_patch16_224_annex_iv,training,relevance,1,,,claude
+microsoft__BiomedCLIP-PubMedBERT_256-vit_base_patch16_224_annex_iv,training,representativeness,1,,,claude
+microsoft__BiomedCLIP-PubMedBERT_256-vit_base_patch16_224_annex_iv,training,statistical_props,1,,,claude
+microsoft__BiomedCLIP-PubMedBERT_256-vit_base_patch16_224_annex_iv,training,quality_metrics,0,,,claude
+microsoft__BiomedCLIP-PubMedBERT_256-vit_base_patch16_224_annex_iv,training,contextual_characteristics,0,,,claude
+microsoft__BiomedCLIP-PubMedBERT_256-vit_base_patch16_224_annex_iv,validation,design_choices,1,,,claude
+microsoft__BiomedCLIP-PubMedBERT_256-vit_base_patch16_224_annex_iv,validation,provenance,0,,,claude
+microsoft__BiomedCLIP-PubMedBERT_256-vit_base_patch16_224_annex_iv,validation,preprocessing,0,,,claude
+microsoft__BiomedCLIP-PubMedBERT_256-vit_base_patch16_224_annex_iv,validation,assumptions,0,,,claude
+microsoft__BiomedCLIP-PubMedBERT_256-vit_base_patch16_224_annex_iv,validation,suitability,0,,,claude
+microsoft__BiomedCLIP-PubMedBERT_256-vit_base_patch16_224_annex_iv,validation,bias_examination,0,,,claude
+microsoft__BiomedCLIP-PubMedBERT_256-vit_base_patch16_224_annex_iv,validation,bias_mitigation,0,,,claude
+microsoft__BiomedCLIP-PubMedBERT_256-vit_base_patch16_224_annex_iv,validation,data_gap,0,,,claude
+microsoft__BiomedCLIP-PubMedBERT_256-vit_base_patch16_224_annex_iv,validation,relevance,0,,,claude
+microsoft__BiomedCLIP-PubMedBERT_256-vit_base_patch16_224_annex_iv,validation,representativeness,0,,,claude
+microsoft__BiomedCLIP-PubMedBERT_256-vit_base_patch16_224_annex_iv,validation,statistical_props,0,,,claude
+microsoft__BiomedCLIP-PubMedBERT_256-vit_base_patch16_224_annex_iv,validation,quality_metrics,0,,,claude
+microsoft__BiomedCLIP-PubMedBERT_256-vit_base_patch16_224_annex_iv,validation,contextual_characteristics,0,,,claude
+microsoft__BiomedCLIP-PubMedBERT_256-vit_base_patch16_224_annex_iv,testing,design_choices,1,,,claude
+microsoft__BiomedCLIP-PubMedBERT_256-vit_base_patch16_224_annex_iv,testing,provenance,0,,,claude
+microsoft__BiomedCLIP-PubMedBERT_256-vit_base_patch16_224_annex_iv,testing,preprocessing,0,,,claude
+microsoft__BiomedCLIP-PubMedBERT_256-vit_base_patch16_224_annex_iv,testing,assumptions,0,,,claude
+microsoft__BiomedCLIP-PubMedBERT_256-vit_base_patch16_224_annex_iv,testing,suitability,0,,,claude
+microsoft__BiomedCLIP-PubMedBERT_256-vit_base_patch16_224_annex_iv,testing,bias_examination,0,,,claude
+microsoft__BiomedCLIP-PubMedBERT_256-vit_base_patch16_224_annex_iv,testing,bias_mitigation,0,,,claude
+microsoft__BiomedCLIP-PubMedBERT_256-vit_base_patch16_224_annex_iv,testing,data_gap,0,,,claude
+microsoft__BiomedCLIP-PubMedBERT_256-vit_base_patch16_224_annex_iv,testing,relevance,0,,,claude
+microsoft__BiomedCLIP-PubMedBERT_256-vit_base_patch16_224_annex_iv,testing,representativeness,0,,,claude
+microsoft__BiomedCLIP-PubMedBERT_256-vit_base_patch16_224_annex_iv,testing,statistical_props,0,,,claude
+microsoft__BiomedCLIP-PubMedBERT_256-vit_base_patch16_224_annex_iv,testing,quality_metrics,0,,,claude
+microsoft__BiomedCLIP-PubMedBERT_256-vit_base_patch16_224_annex_iv,testing,contextual_characteristics,0,,,claude
+microsoft__BiomedVLP-BioViL-T_annex_iv,training,design_choices,1,,,claude
+microsoft__BiomedVLP-BioViL-T_annex_iv,training,provenance,1,,,claude
+microsoft__BiomedVLP-BioViL-T_annex_iv,training,preprocessing,1,,,claude
+microsoft__BiomedVLP-BioViL-T_annex_iv,training,assumptions,1,,,claude
+microsoft__BiomedVLP-BioViL-T_annex_iv,training,suitability,0,,,claude
+microsoft__BiomedVLP-BioViL-T_annex_iv,training,bias_examination,0,,,claude
+microsoft__BiomedVLP-BioViL-T_annex_iv,training,bias_mitigation,0,,,claude
+microsoft__BiomedVLP-BioViL-T_annex_iv,training,data_gap,1,,,claude
+microsoft__BiomedVLP-BioViL-T_annex_iv,training,relevance,1,,,claude
+microsoft__BiomedVLP-BioViL-T_annex_iv,training,representativeness,0,,,claude
+microsoft__BiomedVLP-BioViL-T_annex_iv,training,statistical_props,0,,,claude
+microsoft__BiomedVLP-BioViL-T_annex_iv,training,quality_metrics,0,,,claude
+microsoft__BiomedVLP-BioViL-T_annex_iv,training,contextual_characteristics,1,,,claude
+microsoft__BiomedVLP-BioViL-T_annex_iv,validation,design_choices,1,,,claude
+microsoft__BiomedVLP-BioViL-T_annex_iv,validation,provenance,1,,,claude
+microsoft__BiomedVLP-BioViL-T_annex_iv,validation,preprocessing,0,,,claude
+microsoft__BiomedVLP-BioViL-T_annex_iv,validation,assumptions,0,,,claude
+microsoft__BiomedVLP-BioViL-T_annex_iv,validation,suitability,1,,,claude
+microsoft__BiomedVLP-BioViL-T_annex_iv,validation,bias_examination,0,,,claude
+microsoft__BiomedVLP-BioViL-T_annex_iv,validation,bias_mitigation,0,,,claude
+microsoft__BiomedVLP-BioViL-T_annex_iv,validation,data_gap,0,,,claude
+microsoft__BiomedVLP-BioViL-T_annex_iv,validation,relevance,1,,,claude
+microsoft__BiomedVLP-BioViL-T_annex_iv,validation,representativeness,0,,,claude
+microsoft__BiomedVLP-BioViL-T_annex_iv,validation,statistical_props,0,,,claude
+microsoft__BiomedVLP-BioViL-T_annex_iv,validation,quality_metrics,0,,,claude
+microsoft__BiomedVLP-BioViL-T_annex_iv,validation,contextual_characteristics,0,,,claude
+microsoft__BiomedVLP-BioViL-T_annex_iv,testing,design_choices,1,,,claude
+microsoft__BiomedVLP-BioViL-T_annex_iv,testing,provenance,1,,,claude
+microsoft__BiomedVLP-BioViL-T_annex_iv,testing,preprocessing,0,,,claude
+microsoft__BiomedVLP-BioViL-T_annex_iv,testing,assumptions,0,,,claude
+microsoft__BiomedVLP-BioViL-T_annex_iv,testing,suitability,1,,,claude
+microsoft__BiomedVLP-BioViL-T_annex_iv,testing,bias_examination,0,,,claude
+microsoft__BiomedVLP-BioViL-T_annex_iv,testing,bias_mitigation,0,,,claude
+microsoft__BiomedVLP-BioViL-T_annex_iv,testing,data_gap,0,,,claude
+microsoft__BiomedVLP-BioViL-T_annex_iv,testing,relevance,0,,,claude
+microsoft__BiomedVLP-BioViL-T_annex_iv,testing,representativeness,0,,,claude
+microsoft__BiomedVLP-BioViL-T_annex_iv,testing,statistical_props,1,,,claude
+microsoft__BiomedVLP-BioViL-T_annex_iv,testing,quality_metrics,0,,,claude
+microsoft__BiomedVLP-BioViL-T_annex_iv,testing,contextual_characteristics,0,,,claude
+model_card_compliant,training,design_choices,1,,,claude
+model_card_compliant,training,provenance,1,,,claude
+model_card_compliant,training,preprocessing,1,,,claude
+model_card_compliant,training,assumptions,1,,,claude
+model_card_compliant,training,suitability,1,,,claude
+model_card_compliant,training,bias_examination,1,,,claude
+model_card_compliant,training,bias_mitigation,1,,,claude
+model_card_compliant,training,data_gap,1,,,claude
+model_card_compliant,training,relevance,1,,,claude
+model_card_compliant,training,representativeness,1,,,claude
+model_card_compliant,training,statistical_props,1,,,claude
+model_card_compliant,training,quality_metrics,1,,,claude
+model_card_compliant,training,contextual_characteristics,1,,,claude
+model_card_compliant,validation,design_choices,1,,,claude
+model_card_compliant,validation,provenance,1,,,claude
+model_card_compliant,validation,preprocessing,1,,,claude
+model_card_compliant,validation,assumptions,1,,,claude
+model_card_compliant,validation,suitability,1,,,claude
+model_card_compliant,validation,bias_examination,1,,,claude
+model_card_compliant,validation,bias_mitigation,1,,,claude
+model_card_compliant,validation,data_gap,1,,,claude
+model_card_compliant,validation,relevance,1,,,claude
+model_card_compliant,validation,representativeness,1,,,claude
+model_card_compliant,validation,statistical_props,1,,,claude
+model_card_compliant,validation,quality_metrics,1,,,claude
+model_card_compliant,validation,contextual_characteristics,1,,,claude
+model_card_compliant,testing,design_choices,1,,,claude
+model_card_compliant,testing,provenance,1,,,claude
+model_card_compliant,testing,preprocessing,1,,,claude
+model_card_compliant,testing,assumptions,1,,,claude
+model_card_compliant,testing,suitability,1,,,claude
+model_card_compliant,testing,bias_examination,1,,,claude
+model_card_compliant,testing,bias_mitigation,1,,,claude
+model_card_compliant,testing,data_gap,1,,,claude
+model_card_compliant,testing,relevance,1,,,claude
+model_card_compliant,testing,representativeness,1,,,claude
+model_card_compliant,testing,statistical_props,1,,,claude
+model_card_compliant,testing,quality_metrics,1,,,claude
+model_card_compliant,testing,contextual_characteristics,1,,,claude
+model_card_compliant_one_out,training,design_choices,1,,fallback: analyse.OBLIGATION_GROUND_TRUTH,claude
+model_card_compliant_one_out,training,provenance,1,,fallback: analyse.OBLIGATION_GROUND_TRUTH,claude
+model_card_compliant_one_out,training,preprocessing,1,,fallback: analyse.OBLIGATION_GROUND_TRUTH,claude
+model_card_compliant_one_out,training,assumptions,1,,fallback: analyse.OBLIGATION_GROUND_TRUTH,claude
+model_card_compliant_one_out,training,suitability,1,,fallback: analyse.OBLIGATION_GROUND_TRUTH,claude
+model_card_compliant_one_out,training,bias_examination,1,,fallback: analyse.OBLIGATION_GROUND_TRUTH,claude
+model_card_compliant_one_out,training,bias_mitigation,1,,fallback: analyse.OBLIGATION_GROUND_TRUTH,claude
+model_card_compliant_one_out,training,data_gap,1,,fallback: analyse.OBLIGATION_GROUND_TRUTH,claude
+model_card_compliant_one_out,training,relevance,1,,fallback: analyse.OBLIGATION_GROUND_TRUTH,claude
+model_card_compliant_one_out,training,representativeness,1,,fallback: analyse.OBLIGATION_GROUND_TRUTH,claude
+model_card_compliant_one_out,training,statistical_props,0,,fallback: analyse.OBLIGATION_GROUND_TRUTH,claude
+model_card_compliant_one_out,training,quality_metrics,1,,fallback: analyse.OBLIGATION_GROUND_TRUTH,claude
+model_card_compliant_one_out,training,contextual_characteristics,1,,fallback: analyse.OBLIGATION_GROUND_TRUTH,claude
+model_card_compliant_one_out,validation,design_choices,1,,fallback: analyse.OBLIGATION_GROUND_TRUTH,claude
+model_card_compliant_one_out,validation,provenance,1,,fallback: analyse.OBLIGATION_GROUND_TRUTH,claude
+model_card_compliant_one_out,validation,preprocessing,1,,fallback: analyse.OBLIGATION_GROUND_TRUTH,claude
+model_card_compliant_one_out,validation,assumptions,1,,fallback: analyse.OBLIGATION_GROUND_TRUTH,claude
+model_card_compliant_one_out,validation,suitability,1,,fallback: analyse.OBLIGATION_GROUND_TRUTH,claude
+model_card_compliant_one_out,validation,bias_examination,1,,fallback: analyse.OBLIGATION_GROUND_TRUTH,claude
+model_card_compliant_one_out,validation,bias_mitigation,1,,fallback: analyse.OBLIGATION_GROUND_TRUTH,claude
+model_card_compliant_one_out,validation,data_gap,1,,fallback: analyse.OBLIGATION_GROUND_TRUTH,claude
+model_card_compliant_one_out,validation,relevance,1,,fallback: analyse.OBLIGATION_GROUND_TRUTH,claude
+model_card_compliant_one_out,validation,representativeness,1,,fallback: analyse.OBLIGATION_GROUND_TRUTH,claude
+model_card_compliant_one_out,validation,statistical_props,1,,fallback: analyse.OBLIGATION_GROUND_TRUTH,claude
+model_card_compliant_one_out,validation,quality_metrics,1,,fallback: analyse.OBLIGATION_GROUND_TRUTH,claude
+model_card_compliant_one_out,validation,contextual_characteristics,1,,fallback: analyse.OBLIGATION_GROUND_TRUTH,claude
+model_card_compliant_one_out,testing,design_choices,1,,fallback: analyse.OBLIGATION_GROUND_TRUTH,claude
+model_card_compliant_one_out,testing,provenance,1,,fallback: analyse.OBLIGATION_GROUND_TRUTH,claude
+model_card_compliant_one_out,testing,preprocessing,1,,fallback: analyse.OBLIGATION_GROUND_TRUTH,claude
+model_card_compliant_one_out,testing,assumptions,1,,fallback: analyse.OBLIGATION_GROUND_TRUTH,claude
+model_card_compliant_one_out,testing,suitability,1,,fallback: analyse.OBLIGATION_GROUND_TRUTH,claude
+model_card_compliant_one_out,testing,bias_examination,1,,fallback: analyse.OBLIGATION_GROUND_TRUTH,claude
+model_card_compliant_one_out,testing,bias_mitigation,1,,fallback: analyse.OBLIGATION_GROUND_TRUTH,claude
+model_card_compliant_one_out,testing,data_gap,1,,fallback: analyse.OBLIGATION_GROUND_TRUTH,claude
+model_card_compliant_one_out,testing,relevance,1,,fallback: analyse.OBLIGATION_GROUND_TRUTH,claude
+model_card_compliant_one_out,testing,representativeness,1,,fallback: analyse.OBLIGATION_GROUND_TRUTH,claude
+model_card_compliant_one_out,testing,statistical_props,1,,fallback: analyse.OBLIGATION_GROUND_TRUTH,claude
+model_card_compliant_one_out,testing,quality_metrics,1,,fallback: analyse.OBLIGATION_GROUND_TRUTH,claude
+model_card_compliant_one_out,testing,contextual_characteristics,1,,fallback: analyse.OBLIGATION_GROUND_TRUTH,claude
+model_card_noncompliant,training,design_choices,1,,,claude
+model_card_noncompliant,training,provenance,1,,,claude
+model_card_noncompliant,training,preprocessing,1,,,claude
+model_card_noncompliant,training,assumptions,1,,,claude
+model_card_noncompliant,training,suitability,1,,,claude
+model_card_noncompliant,training,bias_examination,0,,,claude
+model_card_noncompliant,training,bias_mitigation,0,,,claude
+model_card_noncompliant,training,data_gap,0,,,claude
+model_card_noncompliant,training,relevance,1,,,claude
+model_card_noncompliant,training,representativeness,0,,,claude
+model_card_noncompliant,training,statistical_props,1,,,claude
+model_card_noncompliant,training,quality_metrics,1,,,claude
+model_card_noncompliant,training,contextual_characteristics,1,,,claude
+model_card_noncompliant,validation,design_choices,1,,,claude
+model_card_noncompliant,validation,provenance,1,,,claude
+model_card_noncompliant,validation,preprocessing,1,,,claude
+model_card_noncompliant,validation,assumptions,1,,,claude
+model_card_noncompliant,validation,suitability,1,,,claude
+model_card_noncompliant,validation,bias_examination,0,,,claude
+model_card_noncompliant,validation,bias_mitigation,0,,,claude
+model_card_noncompliant,validation,data_gap,0,,,claude
+model_card_noncompliant,validation,relevance,1,,,claude
+model_card_noncompliant,validation,representativeness,0,,,claude
+model_card_noncompliant,validation,statistical_props,0,,,claude
+model_card_noncompliant,validation,quality_metrics,0,,,claude
+model_card_noncompliant,validation,contextual_characteristics,1,,,claude
+model_card_noncompliant,testing,design_choices,0,,,claude
+model_card_noncompliant,testing,provenance,0,,,claude
+model_card_noncompliant,testing,preprocessing,0,,,claude
+model_card_noncompliant,testing,assumptions,0,,,claude
+model_card_noncompliant,testing,suitability,0,,,claude
+model_card_noncompliant,testing,bias_examination,0,,,claude
+model_card_noncompliant,testing,bias_mitigation,0,,,claude
+model_card_noncompliant,testing,data_gap,0,,,claude
+model_card_noncompliant,testing,relevance,0,,,claude
+model_card_noncompliant,testing,representativeness,0,,,claude
+model_card_noncompliant,testing,statistical_props,0,,,claude
+model_card_noncompliant,testing,quality_metrics,0,,,claude
+model_card_noncompliant,testing,contextual_characteristics,0,,,claude
