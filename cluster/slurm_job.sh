@@ -86,6 +86,9 @@ NO_NEO4J=1 \
 OLLAMA_URL="$OLLAMA_URL" \
 FORCE="${FORCE:-0}" \
 EXTRA_ARGS="${EXTRA_ARGS:-}" \
+INPUT_GLOB="${INPUT_GLOB:-inputs/*.md}" \
+OUTPUTS_DIR="${OUTPUTS_DIR:-outputs}" \
+CACHE_DIR="${CACHE_DIR:-cache}" \
   bash cluster/run_all.sh "$MODEL"
 
 echo "[done] results in outputs/ and cache/. Copy them back with scp/rsync."

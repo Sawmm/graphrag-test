@@ -230,12 +230,13 @@ EXTRACTION_SCHEMA = {
 _REPO_ROOT = Path(__file__).parent
 
 
-def _cache_path(input_path: Path, model: str, strip_headers: bool = False) -> Path:
+def _cache_path(input_path: Path, model: str, strip_headers: bool = False,
+                cache_root: Path | None = None) -> Path:
     """Return the path of the JSON cache file for this input + model pair."""
     slug = model.replace(":", "-").replace("/", "_")[:30]
     suffix = "_stripped" if strip_headers else ""
-    cache_dir = _REPO_ROOT / "cache"
-    cache_dir.mkdir(exist_ok=True)
+    cache_dir = cache_root or (_REPO_ROOT / "cache")
+    cache_dir.mkdir(parents=True, exist_ok=True)
     return cache_dir / f"{input_path.stem}__{slug}__graph{suffix}.json"
 
 
@@ -383,6 +384,7 @@ async def extract_and_store(
     neo4j_database: str,
     force: bool = False,
     strip_headers: bool = False,
+    cache_root: Path | None = None,
 ) -> tuple[list, list, dict]:
     """
     Split the document, extract a knowledge graph with the LLM, prune off-schema
@@ -391,7 +393,7 @@ async def extract_and_store(
     On subsequent runs the cached JSON is used instead of re-extracting,
     unless force=True is passed.
     """
-    cache = _cache_path(input_path, model, strip_headers=strip_headers)
+    cache = _cache_path(input_path, model, strip_headers=strip_headers, cache_root=cache_root)
 
     if cache.exists() and not force:
         log.info("Cache hit — skipping extraction. Use --force to re-extract.")
@@ -685,6 +687,18 @@ def main() -> None:
         help=f"Path to article10-shapes.ttl (default: {DEFAULT_SHAPES_PATH})",
     )
     parser.add_argument(
+        "--outputs-dir",
+        type=Path,
+        default=_REPO_ROOT / "outputs",
+        help="Where to write TTL and diagnostics (default: outputs/)",
+    )
+    parser.add_argument(
+        "--cache-dir",
+        type=Path,
+        default=_REPO_ROOT / "cache",
+        help="Where to read/write KG cache JSON (default: cache/)",
+    )
+    parser.add_argument(
         "--bypass",
         action="store_true",
         help=(
@@ -757,8 +771,8 @@ def main() -> None:
 
     llm = OllamaLLM(model_name=args.model, host=args.ollama_url, model_params=MODEL_OPTIONS or None)
 
-    outputs_dir = _REPO_ROOT / "outputs"
-    outputs_dir.mkdir(exist_ok=True)
+    outputs_dir = args.outputs_dir
+    outputs_dir.mkdir(parents=True, exist_ok=True)
     slug = args.model.replace(":", "-").replace("/", "_")[:30]
     if args.zeroshot:
         mode_tag = "zeroshot"
@@ -814,6 +828,7 @@ def main() -> None:
                 neo4j_database=args.neo4j_database,
                 force=args.force,
                 strip_headers=args.strip_headers,
+                cache_root=args.cache_dir,
             )
         )
         if driver is not None:

@@ -25,6 +25,8 @@ MODE="${MODE:-both}"
 FORCE="${FORCE:-0}"
 NO_NEO4J="${NO_NEO4J:-1}"
 INPUT_GLOB="${INPUT_GLOB:-inputs/*.md}"
+OUTPUTS_DIR="${OUTPUTS_DIR:-outputs}"
+CACHE_DIR="${CACHE_DIR:-cache}"
 OLLAMA_URL="${OLLAMA_URL:-http://localhost:11434}"
 NEO4J_URI="${NEO4J_URI:-bolt://localhost:7687}"
 NEO4J_PASSWORD="${NEO4J_PASSWORD:-password}"
@@ -77,6 +79,8 @@ for f in "${files[@]}"; do
         --ollama-url "$OLLAMA_URL" \
         --neo4j-uri "$NEO4J_URI" \
         --neo4j-password "$NEO4J_PASSWORD" \
+        --outputs-dir "$OUTPUTS_DIR" \
+        --cache-dir "$CACHE_DIR" \
         $mode_flag $neo4j_flag $force_flag $EXTRA_ARGS; then
       echo "<<< OK   [$m] $f"
     else
