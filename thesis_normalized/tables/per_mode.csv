@@ -1,0 +1,4 @@
+mode,precision,recall,f1
+graphrag,0.359,0.664,0.386
+bypass,0.731,0.596,0.636
+zeroshot,0.688,0.642,0.626

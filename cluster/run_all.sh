@@ -27,6 +27,7 @@ NO_NEO4J="${NO_NEO4J:-1}"
 INPUT_GLOB="${INPUT_GLOB:-inputs/*.md}"
 OUTPUTS_DIR="${OUTPUTS_DIR:-outputs}"
 CACHE_DIR="${CACHE_DIR:-cache}"
+RUN_SCRIPT="${RUN_SCRIPT:-run.py}"
 OLLAMA_URL="${OLLAMA_URL:-http://localhost:11434}"
 NEO4J_URI="${NEO4J_URI:-bolt://localhost:7687}"
 NEO4J_PASSWORD="${NEO4J_PASSWORD:-password}"
@@ -73,7 +74,7 @@ for f in "${files[@]}"; do
     mode_flag=""
     [[ "$m" == "bypass" ]]   && mode_flag="--bypass"
     [[ "$m" == "zeroshot" ]] && mode_flag="--zeroshot"
-    if uv run python run.py \
+    if uv run python "$RUN_SCRIPT" \
         --input "$f" \
         --model "$MODEL" \
         --ollama-url "$OLLAMA_URL" \

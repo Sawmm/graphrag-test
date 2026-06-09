@@ -44,11 +44,12 @@ from analyse import (
 )
 
 REPO_ROOT = Path(__file__).parent
+SHAPES    = REPO_ROOT / "shapes" / "article10-shapes.ttl"
+# Configured at runtime by main(); defaults below.
 OUTPUTS   = REPO_ROOT / "outputs"
 THESIS    = REPO_ROOT / "thesis"
 TABLES    = THESIS / "tables"
 FIGURES   = THESIS / "figures"
-SHAPES    = REPO_ROOT / "shapes" / "article10-shapes.ttl"
 
 MODES_ORDER  = ["graphrag", "bypass", "zeroshot"]
 MODE_COLORS  = {"graphrag": "#1f77b4", "bypass": "#ff7f0e", "zeroshot": "#2ca02c"}
@@ -294,6 +295,20 @@ def compute_per_obligation_pr(compliance_records: list[dict]) -> pd.DataFrame:
 # ── Main ─────────────────────────────────────────────────────────────────────
 
 def main() -> None:
+    import argparse
+    parser = argparse.ArgumentParser(description="Thesis-grade analysis of compliance pipeline outputs")
+    parser.add_argument("--outputs-dir", type=Path, default=REPO_ROOT / "outputs",
+                        help="Directory with *.ttl + *__diagnostics.json (default: outputs/)")
+    parser.add_argument("--thesis-dir", type=Path, default=REPO_ROOT / "thesis",
+                        help="Where to write tables/ and figures/ (default: thesis/)")
+    args = parser.parse_args()
+
+    global OUTPUTS, THESIS, TABLES, FIGURES
+    OUTPUTS = args.outputs_dir
+    THESIS  = args.thesis_dir
+    TABLES  = THESIS / "tables"
+    FIGURES = THESIS / "figures"
+
     _apply_thesis_style()
     TABLES.mkdir(parents=True, exist_ok=True)
     FIGURES.mkdir(parents=True, exist_ok=True)

@@ -89,6 +89,7 @@ EXTRA_ARGS="${EXTRA_ARGS:-}" \
 INPUT_GLOB="${INPUT_GLOB:-inputs/*.md}" \
 OUTPUTS_DIR="${OUTPUTS_DIR:-outputs}" \
 CACHE_DIR="${CACHE_DIR:-cache}" \
+RUN_SCRIPT="${RUN_SCRIPT:-run.py}" \
   bash cluster/run_all.sh "$MODEL"
 
 echo "[done] results in outputs/ and cache/. Copy them back with scp/rsync."
