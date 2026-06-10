@@ -122,6 +122,19 @@ MODEL_OPTIONS: dict = {
     "options": {"temperature": 0, "num_ctx": 32768},
 }
 
+# Per-model overrides for models that crash with large num_ctx.
+# Gemma 3n / Gemma 4 hits a llama.cpp GGML_SCHED_MAX_SPLIT_INPUTS assert at 32k.
+MODEL_OPTIONS_OVERRIDES: dict[str, dict] = {
+    "gemma4:e4b":   {"options": {"temperature": 0, "num_ctx": 8192}},
+    "gemma4:e2b":   {"options": {"temperature": 0, "num_ctx": 8192}},
+    "gemma3n:e4b":  {"options": {"temperature": 0, "num_ctx": 8192}},
+    "gemma3n:e2b":  {"options": {"temperature": 0, "num_ctx": 8192}},
+}
+
+
+def _model_options(model: str) -> dict:
+    return MODEL_OPTIONS_OVERRIDES.get(model, MODEL_OPTIONS)
+
 
 # ---------------------------------------------------------------------------
 # RDF namespaces
@@ -763,7 +776,7 @@ def main() -> None:
     else:
         text = args.input.read_text(encoding="utf-8")
 
-    llm = OllamaLLM(model_name=args.model, host=args.ollama_url, model_params=MODEL_OPTIONS or None)
+    llm = OllamaLLM(model_name=args.model, host=args.ollama_url, model_params=_model_options(args.model))
 
     outputs_dir = args.outputs_dir
     outputs_dir.mkdir(parents=True, exist_ok=True)
