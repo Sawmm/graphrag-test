@@ -74,6 +74,16 @@ GROUND_TRUTH: dict[str, bool] = {
     "model_card_compliant_copy": True,
     "model_card_noncompliant":   False,
     "model_card_compliant_one_out": False,
+    # synthetic diversity cards
+    "synthetic__druginteract_v1_annex_iv":                   True,
+    "synthetic__fraudguard_v2_small_headers_annex_iv":       True,
+    "synthetic__fraudguard_v2_small_noheaders_annex_iv":     True,
+    "synthetic__creditscore_pro_v3_annex_iv":                False,
+    "synthetic__sepsisai_v3_annex_iv":                       False,
+    "synthetic__edurank_v2_annex_iv":                        False,
+    "synthetic__insureai_v1_5_annex_iv":                     False,
+    "synthetic__faceid_law_v2_annex_iv":                     False,
+    "synthetic__toximod_v2_annex_iv":                        False,
 }
 
 # ── Ground truth: per-obligation presence for precision/recall ───────────────
@@ -129,7 +139,13 @@ def _load_gold_csv() -> None:
             first = f.readline()
             if not first.lower().startswith("sep="):
                 f.seek(0)
-            reader = csv.DictReader(f, delimiter=";" if ";" in first and "," not in first.split(";")[0] else ",")
+            if "\t" in first:
+                _delim = "\t"
+            elif ";" in first and "," not in first.split(";")[0]:
+                _delim = ";"
+            else:
+                _delim = ","
+            reader = csv.DictReader(f, delimiter=_delim)
             for row in reader:
                 present = (row.get("present") or "").strip()
                 if present not in ("0", "1"):
@@ -141,6 +157,37 @@ def _load_gold_csv() -> None:
 
 
 _load_gold_csv()
+
+
+def _derive_ground_truth() -> None:
+    """Auto-populate GROUND_TRUTH for any doc with complete OBLIGATION_GROUND_TRUTH.
+
+    A doc is compliant iff all 3 sections × 13 obligations are present (True).
+    Only runs for docs not already in GROUND_TRUTH and where all 39 fields are filled,
+    so partial real-card labels don't produce spurious verdicts.
+    """
+    _SECTIONS = ("training", "validation", "testing")
+    _OBLIGATIONS = set(_ALL_TRUE.keys())
+    for doc, sections in OBLIGATION_GROUND_TRUTH.items():
+        if doc in GROUND_TRUTH:
+            continue
+        if set(sections.keys()) < set(_SECTIONS):
+            continue
+        complete = all(
+            set(sections.get(sec, {}).keys()) >= _OBLIGATIONS
+            for sec in _SECTIONS
+        )
+        if not complete:
+            continue
+        compliant = all(
+            sections[sec][ob]
+            for sec in _SECTIONS
+            for ob in _OBLIGATIONS
+        )
+        GROUND_TRUTH[doc] = compliant
+
+
+_derive_ground_truth()
 
 # ── Matplotlib style for LaTeX-compatible PDF output ────────────────────────
 
