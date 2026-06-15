@@ -546,18 +546,6 @@ def kg_to_rdf(nodes: list, relationships: list) -> Graph:
     system_node = EX.TargetSystem
     g.add((system_node, RDF.type, GAI.HighRiskAISystem))
 
-    # Collect all doc types found across ALL dataset nodes (union approach).
-    # Model cards often document things once for the whole system; a chunk
-    # boundary mid-section can cause the LLM to attribute docs to TrainingDataset
-    # even when the text is about testing.  If any dataset node has a doc type,
-    # treat it as documented for the system as a whole.
-    global_doc_rels: set[str] = set()
-    for ds_label in dataset_config:
-        for ds_node in by_label.get(ds_label, []):
-            for rel_type, _ in rels_from.get(_id(ds_node), []):
-                if rel_type in rel_to_predicate:
-                    global_doc_rels.add(rel_type)
-
     n_datasets = n_docs = 0
     for ds_label, (ds_rdf_node, sys_pred, title) in dataset_config.items():
         if not by_label.get(ds_label):
@@ -569,7 +557,6 @@ def kg_to_rdf(nodes: list, relationships: list) -> Graph:
         g.add((ds_rdf_node, DCT.title, Literal(title)))
         n_datasets += 1
 
-        # Emit dataset-specific docs, then fill in any globally-found ones
         emitted: set[str] = set()
         for ds_node in by_label[ds_label]:
             for rel_type, _ in rels_from.get(_id(ds_node), []):
@@ -580,14 +567,6 @@ def kg_to_rdf(nodes: list, relationships: list) -> Graph:
                     g.add((doc_node, RDF.type, GAI.DocumentationNode))
                     emitted.add(rel_type)
                     n_docs += 1
-
-        for rel_type in global_doc_rels - emitted:
-            pred = rel_to_predicate.get(rel_type)
-            if pred:
-                doc_node = BNode()
-                g.add((ds_rdf_node, GAI[pred], doc_node))
-                g.add((doc_node, RDF.type, GAI.DocumentationNode))
-                n_docs += 1
 
     log.info("RDF built: %d dataset(s), %d documentation node(s)", n_datasets, n_docs)
     return g
