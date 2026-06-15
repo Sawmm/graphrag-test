@@ -218,7 +218,7 @@ microsoft__BiomedCLIP-PubMedBERT_256-vit_base_patch16_224_annex_iv;validation;da
 microsoft__BiomedCLIP-PubMedBERT_256-vit_base_patch16_224_annex_iv;validation;relevance;0;;;
 microsoft__BiomedCLIP-PubMedBERT_256-vit_base_patch16_224_annex_iv;validation;representativeness;0;;;
 microsoft__BiomedCLIP-PubMedBERT_256-vit_base_patch16_224_annex_iv;validation;statistical_props;0;;;
-microsoft__BiomedCLIP-PubMedBERT_256-vit_base_patch16_224_annex_iv;validation;quality_metrics;;;;
+microsoft__BiomedCLIP-PubMedBERT_256-vit_base_patch16_224_annex_iv;validation;quality_metrics;0;;;
 microsoft__BiomedCLIP-PubMedBERT_256-vit_base_patch16_224_annex_iv;validation;contextual_characteristics;0;;;
 microsoft__BiomedCLIP-PubMedBERT_256-vit_base_patch16_224_annex_iv;testing;design_choices;1;;;
 microsoft__BiomedCLIP-PubMedBERT_256-vit_base_patch16_224_annex_iv;testing;provenance;1;;;

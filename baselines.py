@@ -208,7 +208,7 @@ _BASELINES: dict[str, callable] = {
 }
 
 _REPO        = Path(__file__).parent
-_INPUTS_DIR  = _REPO / "inputs"
+_INPUTS_DIR  = _REPO / "inputs" / "normalized"
 _OUTPUTS_DIR = _REPO / "outputs"
 
 
@@ -251,7 +251,7 @@ def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__.split("\n\n")[0])
     parser.add_argument("--baseline", choices=list(_BASELINES), default="keyword")
     parser.add_argument("--input", type=Path, default=None,
-                        help="Single input file. If omitted, runs on every file in inputs/.")
+                        help="Single input file. If omitted, runs on every file in inputs/normalized/.")
     args = parser.parse_args()
 
     targets = (
