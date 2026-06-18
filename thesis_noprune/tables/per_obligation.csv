@@ -1,0 +1,14 @@
+obligation,mode,tp,fp,fn,precision,recall,f1
+assumptions,graphrag,0,0,140,0.0,0.0,0.0
+bias_examination,graphrag,0,0,155,0.0,0.0,0.0
+bias_mitigation,graphrag,0,0,120,0.0,0.0,0.0
+contextual_characteristics,graphrag,0,0,195,0.0,0.0,0.0
+data_gap,graphrag,0,0,170,0.0,0.0,0.0
+design_choices,graphrag,0,0,320,0.0,0.0,0.0
+preprocessing,graphrag,0,0,210,0.0,0.0,0.0
+provenance,graphrag,0,0,310,0.0,0.0,0.0
+quality_metrics,graphrag,0,0,175,0.0,0.0,0.0
+relevance,graphrag,0,0,185,0.0,0.0,0.0
+representativeness,graphrag,0,0,160,0.0,0.0,0.0
+statistical_props,graphrag,0,0,165,0.0,0.0,0.0
+suitability,graphrag,0,0,230,0.0,0.0,0.0

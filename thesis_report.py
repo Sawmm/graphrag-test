@@ -51,8 +51,8 @@ THESIS    = REPO_ROOT / "thesis"
 TABLES    = THESIS / "tables"
 FIGURES   = THESIS / "figures"
 
-MODES_ORDER  = ["graphrag", "bypass", "zeroshot"]
-MODE_COLORS  = {"graphrag": "#1f77b4", "bypass": "#ff7f0e", "zeroshot": "#2ca02c"}
+MODES_ORDER  = ["graphrag", "graphrag_stripped", "bypass", "zeroshot"]
+MODE_COLORS  = {"graphrag": "#1f77b4", "graphrag_stripped": "#aec7e8", "bypass": "#ff7f0e", "zeroshot": "#2ca02c"}
 
 
 # ── Data loading ─────────────────────────────────────────────────────────────
@@ -267,7 +267,7 @@ def compute_per_obligation_pr(compliance_records: list[dict]) -> pd.DataFrame:
         if not gt:
             continue
         for section, obligations in gt.items():
-            actual_section = rec.get("sections", {}).get(section, {})
+            actual_section = rec.get(section, {})
             for ob, expected in obligations.items():
                 pred = bool(actual_section.get(ob, False))
                 rows.append({

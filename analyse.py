@@ -226,7 +226,7 @@ def parse_ttl_name(path: Path) -> tuple[str, str, str]:
     """
     stem = path.stem
     parts = stem.split("__")
-    if len(parts) >= 3 and parts[-1] in ("graphrag", "bypass", "zeroshot"):
+    if len(parts) >= 3 and parts[-1] in ("graphrag", "graphrag_stripped", "graphrag_judge", "bypass", "zeroshot"):
         mode  = parts[-1]
         model = parts[-2]
         doc   = "__".join(parts[:-2])

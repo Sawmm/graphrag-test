@@ -1,0 +1,4 @@
+mode,F1_pruned,F1_noprune,F1_delta
+bypass,0.702,,
+graphrag,0.463,0.506,0.15
+zeroshot,0.653,,

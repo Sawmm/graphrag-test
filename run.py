@@ -509,7 +509,8 @@ def kg_to_rdf(nodes: list, relationships: list) -> Graph:
     def _id(node):
         return getattr(node, "id", None) or getattr(node, "element_id", None)
 
-    # Outgoing relationship index: node_id -> [(rel_type, target_id)]
+    # Build an outgoing-edge index so we can look up a node's relationships
+    # in O(1): node_id → [(rel_type, target_id), ...]
     rels_from: dict = defaultdict(list)
     for rel in relationships:
         start = getattr(rel, "start_node_id", None)
@@ -518,25 +519,29 @@ def kg_to_rdf(nodes: list, relationships: list) -> Graph:
         if start is not None and end is not None:
             rels_from[start].append((rtype, end))
 
-    # Group nodes by label (skip Chunk nodes)
+    # Group extracted nodes by their schema label; drop Chunk nodes (they are
+    # text containers used during extraction, not compliance-relevant entities)
     by_label: dict[str, list] = defaultdict(list)
     for node in nodes:
         lbl = _label(node)
         if lbl and lbl != "Chunk":
             by_label[lbl].append(node)
 
-    # Reverse map: KG relationship type → gai-act predicate name
+    # Translate KG relationship types (e.g. HAS_BIAS_EXAMINATION_DOC) to the
+    # corresponding gai-act: predicate name (e.g. hasBiasExaminationDoc)
     rel_to_predicate: dict[str, str] = {
         rel: pred for _, (rel, pred) in _OBLIGATION_NODES.items()
     }
 
-    # Dataset KG label → (RDF node, system predicate, display title)
+    # Maps each KG dataset label to its RDF node, the system-level predicate
+    # that links it to ex:TargetSystem, and a human-readable title literal
     dataset_config = {
         "TrainingDataset":   (EX.TrainingDataset,   GAI.hasTrainingDataset,   "Training Dataset"),
         "ValidationDataset": (EX.ValidationDataset, GAI.hasValidationDataset, "Validation Dataset"),
         "TestingDataset":    (EX.TestingDataset,    GAI.hasTestingDataset,    "Testing Dataset"),
     }
 
+    # Initialise the RDF graph with the target system as a HighRiskAISystem
     g = Graph()
     g.bind("gai-act", GAI)
     g.bind("ex",      EX)
@@ -548,15 +553,23 @@ def kg_to_rdf(nodes: list, relationships: list) -> Graph:
 
     n_datasets = n_docs = 0
     for ds_label, (ds_rdf_node, sys_pred, title) in dataset_config.items():
+        # Skip splits the extractor found no nodes for; SHACL Family 1 will
+        # fire a §10(1) violation for the missing dataset
         if not by_label.get(ds_label):
             log.debug("No %s nodes found — SHACL will flag missing dataset", ds_label)
             continue
 
+        # Link this dataset split to the system and type it as a dcat:Dataset
         g.add((system_node, sys_pred, ds_rdf_node))
         g.add((ds_rdf_node, RDF.type, DCAT.Dataset))
         g.add((ds_rdf_node, DCT.title, Literal(title)))
         n_datasets += 1
 
+        # For each documentation relationship the extractor found on this
+        # split's nodes, emit a blank-node DocumentationNode — the
+        # Documentation Proxy: its mere presence satisfies the SHACL shape.
+        # emitted guards against duplicate predicates if multiple KG nodes
+        # of the same dataset type carry the same relationship.
         emitted: set[str] = set()
         for ds_node in by_label[ds_label]:
             for rel_type, _ in rels_from.get(_id(ds_node), []):

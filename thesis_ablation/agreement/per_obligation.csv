@@ -1,0 +1,14 @@
+obligation,n,agreement,kappa
+relevance,30,0.667,0.398
+suitability,30,0.733,0.467
+statistical_props,30,0.767,0.553
+assumptions,30,0.767,0.557
+provenance,30,0.833,0.59
+design_choices,30,0.867,0.63
+quality_metrics,29,0.828,0.654
+data_gap,30,0.867,0.733
+bias_examination,30,0.933,0.856
+representativeness,30,0.933,0.861
+preprocessing,30,0.933,0.865
+contextual_characteristics,30,0.967,0.933
+bias_mitigation,30,1.0,1.0
